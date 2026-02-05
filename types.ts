@@ -18,7 +18,8 @@ export enum ViewMode {
   Home = 'home',
   Explore = 'explore',
   Library = 'library',
-  Account = 'account'
+  Account = 'account',
+  PaperDetail = 'paper_detail'
 }
 
 export interface TrendingTopic {
@@ -37,4 +38,19 @@ export interface StatItem {
 export interface DailyData {
   day: string;
   value: number;
+}
+
+export interface ChatMessage {
+  role: 'user' | 'model';
+  text: string;
+}
+
+export type Frequency = 'daily' | 'weekly';
+export type TimeSlot = 'morning' | 'afternoon' | 'evening';
+
+export interface UserSubscription {
+  domains: string[];
+  frequency: Frequency;
+  timeSlot: TimeSlot;
+  subscribedAt: string;
 }

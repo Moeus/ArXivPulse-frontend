@@ -6,14 +6,16 @@ import { geminiService } from '../services/geminiService';
 interface PaperCardProps {
   paper: Paper;
   onBookmark: (id: string) => void;
+  onClick: (paper: Paper) => void;
 }
 
-const PaperCard: React.FC<PaperCardProps> = ({ paper, onBookmark }) => {
+const PaperCard: React.FC<PaperCardProps> = ({ paper, onBookmark, onClick }) => {
   const [showSummary, setShowSummary] = useState(false);
   const [aiSummary, setAiSummary] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const handleAiInsights = async () => {
+  const handleAiInsights = async (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent card click
     if (aiSummary) {
       setShowSummary(!showSummary);
       return;
@@ -35,7 +37,10 @@ const PaperCard: React.FC<PaperCardProps> = ({ paper, onBookmark }) => {
   };
 
   return (
-    <div className="bg-white border border-gray-100 rounded-xl p-6 shadow-sm hover:shadow-md hover:border-primary/30 transition-all group">
+    <div 
+      onClick={() => onClick(paper)}
+      className="bg-white border border-gray-100 rounded-xl p-6 shadow-sm hover:shadow-md hover:border-primary/30 transition-all group cursor-pointer"
+    >
       <div className="flex justify-between items-start mb-3">
         <div className="flex gap-2 mb-2 flex-wrap">
           <span className={`px-2.5 py-1 rounded-md text-xs font-semibold ${getCategoryColor(paper.mainCategory)}`}>
@@ -46,7 +51,10 @@ const PaperCard: React.FC<PaperCardProps> = ({ paper, onBookmark }) => {
           </span>
         </div>
         <button 
-          onClick={() => onBookmark(paper.id)}
+          onClick={(e) => {
+            e.stopPropagation();
+            onBookmark(paper.id);
+          }}
           className={`transition-colors p-1 ${paper.isBookmarked ? 'text-primary' : 'text-text-secondary hover:text-primary'}`}
         >
           <span className={`material-symbols-outlined ${paper.isBookmarked ? 'fill' : ''}`}>
@@ -55,11 +63,11 @@ const PaperCard: React.FC<PaperCardProps> = ({ paper, onBookmark }) => {
         </button>
       </div>
 
-      <h3 className="text-xl font-bold text-text-main mb-2 leading-tight group-hover:text-primary transition-colors cursor-pointer">
+      <h3 className="text-xl font-bold text-text-main mb-2 leading-tight group-hover:text-primary transition-colors">
         {paper.title}
       </h3>
       
-      <p className="text-text-secondary text-sm leading-relaxed mb-4">
+      <p className="text-text-secondary text-sm leading-relaxed mb-4 line-clamp-3">
         {paper.abstract}
       </p>
 
@@ -72,7 +80,7 @@ const PaperCard: React.FC<PaperCardProps> = ({ paper, onBookmark }) => {
           {loading ? (
             <div className="flex items-center gap-3 text-text-secondary text-sm italic py-2">
               <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
-              Analyzing research concepts...
+              Analyzing research...
             </div>
           ) : (
             <p className="text-sm text-text-main leading-relaxed">
