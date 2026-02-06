@@ -1,6 +1,6 @@
 
 import React, { useState, useMemo } from 'react';
-import { Paper, ViewMode } from './types';
+import { Paper, ViewMode, User } from './types';
 import { MOCK_PAPERS } from './constants';
 import Sidebar from './components/Sidebar';
 import PaperCard from './components/PaperCard';
@@ -8,9 +8,12 @@ import HomeDashboard from './components/HomeDashboard';
 import ExploreView from './components/ExploreView';
 import PaperDetailView from './components/PaperDetailView';
 import AccountView from './components/AccountView';
+import LandingPage from './components/LandingPage';
+import AuthPage from './components/AuthPage';
 
 const App: React.FC = () => {
-  const [currentView, setCurrentView] = useState<ViewMode>(ViewMode.Explore);
+  const [user, setUser] = useState<User | null>(null);
+  const [currentView, setCurrentView] = useState<ViewMode>(ViewMode.Landing);
   const [previousView, setPreviousView] = useState<ViewMode>(ViewMode.Explore);
   const [selectedPaper, setSelectedPaper] = useState<Paper | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -19,16 +22,12 @@ const App: React.FC = () => {
 
   const filteredPapers = useMemo(() => {
     let result = papers;
-
-    // Filter by category chip/card
     if (activeFilter !== 'All') {
       result = result.filter(p => 
         p.mainCategory.toLowerCase().includes(activeFilter.toLowerCase()) || 
         p.subCategory.toLowerCase().includes(activeFilter.toLowerCase())
       );
     }
-
-    // Filter by search query
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       result = result.filter(p => 
@@ -37,7 +36,6 @@ const App: React.FC = () => {
         p.authors.some(a => a.toLowerCase().includes(q))
       );
     }
-
     return result;
   }, [papers, searchQuery, activeFilter]);
 
@@ -50,7 +48,6 @@ const App: React.FC = () => {
       const updated = prev.map(p => 
         p.id === id ? { ...p, isBookmarked: !p.isBookmarked } : p
       );
-      // Update selected paper if it's the one being bookmarked
       if (selectedPaper && selectedPaper.id === id) {
         const p = updated.find(p => p.id === id);
         if (p) setSelectedPaper(p);
@@ -70,11 +67,22 @@ const App: React.FC = () => {
     setSelectedPaper(null);
   };
 
+  const handleLogin = (email: string) => {
+    setUser({ email, name: email.split('@')[0] });
+    setCurrentView(ViewMode.Explore);
+  };
+
   const renderContent = () => {
+    if (!user) {
+      if (currentView === ViewMode.Auth) {
+        return <AuthPage onLogin={handleLogin} onBack={() => setCurrentView(ViewMode.Landing)} />;
+      }
+      return <LandingPage onGetStarted={() => setCurrentView(ViewMode.Auth)} />;
+    }
+
     switch (currentView) {
       case ViewMode.Home:
         return <HomeDashboard />;
-      
       case ViewMode.Explore:
         return (
           <ExploreView 
@@ -87,7 +95,6 @@ const App: React.FC = () => {
             onPaperClick={handlePaperClick}
           />
         );
-
       case ViewMode.Library:
         return (
           <div className="flex flex-col gap-6 animate-fade-in">
@@ -115,32 +122,23 @@ const App: React.FC = () => {
             </div>
           </div>
         );
-
       case ViewMode.PaperDetail:
         if (!selectedPaper) return null;
-        return (
-          <PaperDetailView 
-            paper={selectedPaper}
-            onBack={handleBack}
-            onBookmark={handleBookmark}
-          />
-        );
-
+        return <PaperDetailView paper={selectedPaper} onBack={handleBack} onBookmark={handleBookmark} />;
       case ViewMode.Account:
         return <AccountView />;
-      
       default:
-        return (
-          <div className="py-20 text-center">
-            <p className="text-text-secondary">Section under development.</p>
-          </div>
-        );
+        return null;
     }
   };
 
+  // Logic to show/hide full app shell based on auth state
+  if (!user) {
+    return <div className="min-h-screen bg-white">{renderContent()}</div>;
+  }
+
   return (
     <div className="flex h-screen w-full overflow-hidden bg-background-light">
-      {/* Desktop Sidebar */}
       <Sidebar 
         currentView={currentView} 
         onViewChange={(view) => {
@@ -152,11 +150,9 @@ const App: React.FC = () => {
         }} 
       />
 
-      {/* Main Content Area */}
       <main className="flex-1 h-full overflow-y-auto relative bg-white pb-24 lg:pb-0">
         <div className={`max-w-[1024px] mx-auto px-5 py-6 md:px-12 flex flex-col gap-6 h-full ${currentView === ViewMode.PaperDetail ? 'max-w-none px-0 py-0' : ''}`}>
           
-          {/* Mobile Header */}
           {currentView !== ViewMode.PaperDetail && (
             <div className="lg:hidden flex items-center justify-between mb-2">
               <h1 className="text-xl font-bold tracking-tight text-text-main flex items-center gap-2">
@@ -173,7 +169,6 @@ const App: React.FC = () => {
         </div>
       </main>
 
-      {/* Mobile Bottom Navigation Bar */}
       {currentView !== ViewMode.PaperDetail && (
         <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-xl border-t border-gray-100 h-16 flex items-center justify-around px-6 z-50">
           {[

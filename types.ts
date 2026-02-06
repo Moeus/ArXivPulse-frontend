@@ -19,7 +19,9 @@ export enum ViewMode {
   Explore = 'explore',
   Library = 'library',
   Account = 'account',
-  PaperDetail = 'paper_detail'
+  PaperDetail = 'paper_detail',
+  Landing = 'landing',
+  Auth = 'auth'
 }
 
 export interface TrendingTopic {
@@ -53,4 +55,9 @@ export interface UserSubscription {
   frequency: Frequency;
   timeSlot: TimeSlot;
   subscribedAt: string;
+}
+
+export interface User {
+  email: string;
+  name: string;
 }
