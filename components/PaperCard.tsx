@@ -1,26 +1,25 @@
 
 import React, { useState } from 'react';
-import { Paper } from '../types';
+import { Paper, ViewMode } from '../types';
 import { geminiService } from '../services/geminiService';
+import { useStore } from '../store/useStore';
 
 interface PaperCardProps {
   paper: Paper;
-  onBookmark: (id: string) => void;
-  onClick: (paper: Paper) => void;
 }
 
-const PaperCard: React.FC<PaperCardProps> = ({ paper, onBookmark, onClick }) => {
+const PaperCard: React.FC<PaperCardProps> = ({ paper }) => {
+  const { toggleBookmark, setSelectedPaper, setView } = useStore();
   const [showSummary, setShowSummary] = useState(false);
   const [aiSummary, setAiSummary] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   const handleAiInsights = async (e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent card click
+    e.stopPropagation();
     if (aiSummary) {
       setShowSummary(!showSummary);
       return;
     }
-
     setLoading(true);
     setShowSummary(true);
     const summary = await geminiService.summarizePaper(paper);
@@ -36,10 +35,15 @@ const PaperCard: React.FC<PaperCardProps> = ({ paper, onBookmark, onClick }) => 
     return 'bg-gray-100 text-gray-700';
   };
 
+  const handleCardClick = () => {
+    setSelectedPaper(paper);
+    setView(ViewMode.PaperDetail);
+  };
+
   return (
     <div 
-      onClick={() => onClick(paper)}
-      className="bg-white border border-gray-100 rounded-xl p-6 shadow-sm hover:shadow-md hover:border-primary/30 transition-all group cursor-pointer"
+      onClick={handleCardClick}
+      className="bg-white border border-gray-100 rounded-xl p-6 shadow-sm hover:shadow-md hover:border-primary/30 transition-all group cursor-pointer animate-slide-up"
     >
       <div className="flex justify-between items-start mb-3">
         <div className="flex gap-2 mb-2 flex-wrap">
@@ -53,7 +57,7 @@ const PaperCard: React.FC<PaperCardProps> = ({ paper, onBookmark, onClick }) => 
         <button 
           onClick={(e) => {
             e.stopPropagation();
-            onBookmark(paper.id);
+            toggleBookmark(paper.id);
           }}
           className={`transition-colors p-1 ${paper.isBookmarked ? 'text-primary' : 'text-text-secondary hover:text-primary'}`}
         >
@@ -95,10 +99,10 @@ const PaperCard: React.FC<PaperCardProps> = ({ paper, onBookmark, onClick }) => 
           <span className="font-medium whitespace-nowrap">{paper.authors.join(', ')}</span>
           <button 
             onClick={handleAiInsights}
-            className="text-xs font-bold text-primary flex items-center gap-1 hover:underline decoration-primary/30"
+            className="text-xs font-bold text-primary flex items-center gap-1 hover:underline"
           >
             <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>auto_awesome</span>
-            {showSummary ? 'Hide Insights' : 'Explain Concepts'}
+            {showSummary ? 'Hide' : 'Explain'}
           </button>
         </div>
         <span className="text-xs text-text-secondary font-mono bg-gray-50 px-2 py-1 rounded hidden sm:inline-block">

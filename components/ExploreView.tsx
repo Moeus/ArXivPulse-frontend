@@ -1,16 +1,11 @@
 
 import React from 'react';
-import { Paper } from '../types';
+import { Paper, ViewMode } from '../types';
 import PaperCard from './PaperCard';
+import { useStore } from '../store/useStore';
 
 interface ExploreViewProps {
-  papers: Paper[];
-  searchQuery: string;
-  setSearchQuery: (q: string) => void;
-  activeFilter: string;
-  setActiveFilter: (f: string) => void;
-  onBookmark: (id: string) => void;
-  onPaperClick: (paper: Paper) => void;
+  filteredPapers: Paper[];
 }
 
 const CATEGORIES = [
@@ -20,20 +15,22 @@ const CATEGORIES = [
   { id: 'q-bio', name: 'Biology', icon: 'biotech', color: 'text-green-600', bg: 'bg-green-50' },
 ];
 
-const ExploreView: React.FC<ExploreViewProps> = ({ 
-  papers, 
-  searchQuery, 
-  setSearchQuery, 
-  activeFilter, 
-  setActiveFilter, 
-  onBookmark,
-  onPaperClick
-}) => {
-  const featuredPaper = papers[0];
+const ExploreView: React.FC<ExploreViewProps> = ({ filteredPapers }) => {
+  const { 
+    searchQuery, setSearchQuery, 
+    activeFilter, setActiveFilter, 
+    toggleBookmark, setView, setSelectedPaper 
+  } = useStore();
+
+  const featuredPaper = filteredPapers[0];
+
+  const handlePaperClick = (p: Paper) => {
+    setSelectedPaper(p);
+    setView(ViewMode.PaperDetail);
+  };
 
   return (
     <div className="flex flex-col gap-8 animate-fade-in pb-12">
-      {/* Featured Section */}
       {!searchQuery && activeFilter === 'All' && featuredPaper && (
         <section className="relative overflow-hidden rounded-3xl bg-background-dark text-white p-8 md:p-12 shadow-2xl shadow-primary/20">
           <div className="absolute top-0 right-0 p-6 opacity-10 pointer-events-none">
@@ -42,7 +39,6 @@ const ExploreView: React.FC<ExploreViewProps> = ({
           <div className="relative z-10 flex flex-col gap-4 max-w-2xl">
             <div className="flex items-center gap-2">
               <span className="bg-primary px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">Featured Research</span>
-              <span className="text-white/50 text-xs font-medium">Updated 2h ago</span>
             </div>
             <h2 className="text-2xl md:text-4xl font-black leading-tight tracking-tight">
               {featuredPaper.title}
@@ -52,14 +48,14 @@ const ExploreView: React.FC<ExploreViewProps> = ({
             </p>
             <div className="flex flex-wrap items-center gap-4 mt-2">
               <button 
-                onClick={() => onPaperClick(featuredPaper)}
+                onClick={() => handlePaperClick(featuredPaper)}
                 className="bg-white text-background-dark px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-primary-light transition-colors flex items-center gap-2"
               >
                 Read Abstract
                 <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>arrow_right_alt</span>
               </button>
               <button 
-                onClick={() => onBookmark(featuredPaper.id)}
+                onClick={() => toggleBookmark(featuredPaper.id)}
                 className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border border-white/20 font-bold text-sm hover:bg-white/10 transition-all ${featuredPaper.isBookmarked ? 'bg-primary/20 border-primary/50' : ''}`}
               >
                 <span className="material-symbols-outlined !text-[20px]">{featuredPaper.isBookmarked ? 'bookmark_added' : 'bookmark_add'}</span>
@@ -70,7 +66,6 @@ const ExploreView: React.FC<ExploreViewProps> = ({
         </section>
       )}
 
-      {/* Modern Category Selector */}
       <section className="flex flex-col gap-4">
         <div className="flex items-center justify-between">
           <h3 className="text-sm font-black uppercase tracking-widest text-text-secondary">Explore by Domain</h3>
@@ -100,7 +95,6 @@ const ExploreView: React.FC<ExploreViewProps> = ({
         </div>
       </section>
 
-      {/* Discovery Feed Header */}
       <section className="flex flex-col gap-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-100 pb-4">
           <div>
@@ -119,23 +113,18 @@ const ExploreView: React.FC<ExploreViewProps> = ({
           </div>
         </div>
 
-        {/* Paper Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {papers.length > 0 ? (
-            papers.map((paper, idx) => (
+          {filteredPapers.length > 0 ? (
+            filteredPapers.map((paper, idx) => (
               <div key={paper.id} className={`${idx === 0 && !searchQuery ? 'md:col-span-2' : ''}`}>
-                <PaperCard 
-                  paper={paper} 
-                  onBookmark={onBookmark} 
-                  onClick={onPaperClick}
-                />
+                <PaperCard paper={paper} />
               </div>
             ))
           ) : (
             <div className="col-span-full py-20 text-center flex flex-col items-center gap-4 bg-gray-50 rounded-3xl border-2 border-dashed border-gray-200">
               <span className="material-symbols-outlined text-gray-300 !text-[64px]">science_off</span>
               <p className="text-text-secondary font-bold">No research matches your specific query.</p>
-              <button onClick={() => { setSearchQuery(''); setActiveFilter('All'); }} className="text-primary font-black text-xs uppercase tracking-widest border-b-2 border-primary/20 hover:border-primary transition-all">Reset Exploration</button>
+              <button onClick={() => { setSearchQuery(''); setActiveFilter('All'); }} className="text-primary font-black text-xs uppercase tracking-widest border-b-2 border-primary/20">Reset</button>
             </div>
           )}
         </div>
