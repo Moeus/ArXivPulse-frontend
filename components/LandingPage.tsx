@@ -3,6 +3,7 @@ import React from 'react';
 import { useStore } from '../store/useStore';
 import { ViewMode } from '../types';
 
+
 const LandingPage: React.FC = () => {
   const { setView } = useStore();
 

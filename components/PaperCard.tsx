@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Paper, ViewMode } from '../types';
-import { geminiService } from '../services/geminiService';
+// import { geminiService } from '../services/geminiService';
 import { useStore } from '../store/useStore';
 
 interface PaperCardProps {
@@ -22,8 +22,8 @@ const PaperCard: React.FC<PaperCardProps> = ({ paper }) => {
     }
     setLoading(true);
     setShowSummary(true);
-    const summary = await geminiService.summarizePaper(paper);
-    setAiSummary(summary);
+    // const summary = await geminiService.summarizePaper(paper);
+    // setAiSummary(summary);
     setLoading(false);
   };
 

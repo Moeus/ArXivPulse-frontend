@@ -9,10 +9,17 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@fontsource/inter": "^5.2.8",
+    "@google/genai": "^1.40.0",
+    "@tailwindcss/aspect-ratio": "^0.4.2",
+    "@tailwindcss/forms": "^0.5.11",
+    "@tailwindcss/typography": "^0.5.19",
+    "@tailwindcss/vite": "^4.1.18",
+    "material-symbols": "^0.40.2",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
-    "zustand": "^5.0.3",
-    "@google/genai": "^1.40.0"
+    "tailwindcss": "^4.1.18",
+    "zustand": "^5.0.3"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",

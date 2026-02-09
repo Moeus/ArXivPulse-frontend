@@ -1,0 +1,77 @@
+@import "tailwindcss";
+@import "@fontsource/inter";
+@import "material-symbols";
+
+/* Tailwind CSS v4 Theme Configuration */
+@theme {
+    /* Custom Colors */
+    --color-primary: #7f13ec;
+    --color-primary-light: #d1b3f9;
+    --color-background-light: #ffffff;
+    --color-background-subtle: #f7f6f8;
+    --color-background-dark: #191022;
+    --color-card-dark: #2a1e36;
+    --color-text-main: #141118;
+    --color-text-secondary: #756189;
+
+    /* Font Family */
+    --font-sans: "Inter", sans-serif;
+
+    /* Custom Animations */
+    --animate-fade-in: fadeIn 0.4s ease-out forwards;
+    --animate-slide-up: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    0% {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+
+
+@layer base {
+    body {
+        font-family: 'Inter', sans-serif;
+        -webkit-font-smoothing: antialiased;
+    }
+}
+
+@layer utilities {
+    .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+
+    .material-symbols-outlined.fill {
+        font-variation-settings: 'FILL' 1;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #e5e7eb;
+        border-radius: 10px;
+    }
+}
