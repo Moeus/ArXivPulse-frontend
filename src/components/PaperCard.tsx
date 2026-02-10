@@ -1,8 +1,16 @@
+/**
+ * PaperCard — 论文卡片组件
+ * 展示论文的分类标签、标题、摘要、作者和发布日期
+ * 支持收藏切换和 AI 摘要展开功能
+ * 点击卡片跳转到 PaperDetail 页面
+ */
 
 import React, { useState } from 'react';
 import { Paper, ViewMode } from '../types';
 // import { geminiService } from '../services/geminiService';
 import { useStore } from '../store/useStore';
+import { useT } from '../i18n';
+import { Bookmark, BookmarkCheck, Sparkles } from 'lucide-react';
 
 interface PaperCardProps {
   paper: Paper;
@@ -10,6 +18,7 @@ interface PaperCardProps {
 
 const PaperCard: React.FC<PaperCardProps> = ({ paper }) => {
   const { toggleBookmark, setSelectedPaper, setView } = useStore();
+  const { t } = useT();
   const [showSummary, setShowSummary] = useState(false);
   const [aiSummary, setAiSummary] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -61,9 +70,7 @@ const PaperCard: React.FC<PaperCardProps> = ({ paper }) => {
           }}
           className={`transition-colors p-1 ${paper.isBookmarked ? 'text-primary' : 'text-text-secondary hover:text-primary'}`}
         >
-          <span className={`material-symbols-outlined ${paper.isBookmarked ? 'fill' : ''}`}>
-            {paper.isBookmarked ? 'bookmark_added' : 'bookmark_add'}
-          </span>
+          {paper.isBookmarked ? <BookmarkCheck className="fill-current" size={24} /> : <Bookmark size={24} />}
         </button>
       </div>
 
@@ -78,13 +85,13 @@ const PaperCard: React.FC<PaperCardProps> = ({ paper }) => {
       {showSummary && (
         <div className="mb-4 p-4 bg-primary/5 rounded-lg border border-primary/10 animate-fade-in">
           <div className="flex items-center gap-2 mb-2">
-            <span className="material-symbols-outlined text-primary" style={{ fontSize: '18px' }}>auto_awesome</span>
-            <span className="text-xs font-bold text-primary uppercase tracking-wider">Gemini AI Insights</span>
+            <Sparkles className="text-primary" size={18} />
+            <span className="text-xs font-bold text-primary uppercase tracking-wider">{t('geminiAiInsights')}</span>
           </div>
           {loading ? (
             <div className="flex items-center gap-3 text-text-secondary text-sm italic py-2">
               <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
-              Analyzing research...
+              {t('analyzingResearch')}
             </div>
           ) : (
             <p className="text-sm text-text-main leading-relaxed">
@@ -101,8 +108,8 @@ const PaperCard: React.FC<PaperCardProps> = ({ paper }) => {
             onClick={handleAiInsights}
             className="text-xs font-bold text-primary flex items-center gap-1 hover:underline"
           >
-            <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>auto_awesome</span>
-            {showSummary ? 'Hide' : 'Explain'}
+            <Sparkles size={14} />
+            {showSummary ? t('hide') : t('explain')}
           </button>
         </div>
         <span className="text-xs text-text-secondary font-mono bg-gray-50 px-2 py-1 rounded hidden sm:inline-block">

@@ -1,6 +1,6 @@
 @import "tailwindcss";
 @import "@fontsource/inter";
-@import "material-symbols";
+
 
 /* Tailwind CSS v4 Theme Configuration */
 @theme {
@@ -34,7 +34,7 @@
 
 @keyframes slideUp {
     0% {
-        transform: translateY(20px);
+        transform: translateY(100%);
         opacity: 0;
     }
 
@@ -44,6 +44,17 @@
     }
 }
 
+@keyframes slideInRight {
+    0% {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
 
 
 @layer base {

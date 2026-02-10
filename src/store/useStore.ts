@@ -1,7 +1,13 @@
+/**
+ * useStore — 全局状态管理（Zustand）
+ * 管理用户认证状态、当前视图、论文列表、搜索/筛选、订阅配置、语言偏好
+ * 所有组件通过 useStore() hook 访问和修改全局状态
+ */
 
 import { create } from 'zustand';
 import { ViewMode, Paper, User, UserSubscription } from '../types';
 import { MOCK_PAPERS } from '../constants';
+import type { Locale } from '../i18n';
 
 interface AppState {
   user: User | null;
@@ -12,6 +18,7 @@ interface AppState {
   searchQuery: string;
   activeFilter: string;
   subscription: UserSubscription | null;
+  locale: Locale;
 
   // Actions
   setUser: (user: User | null) => void;
@@ -21,6 +28,7 @@ interface AppState {
   setActiveFilter: (filter: string) => void;
   toggleBookmark: (id: string) => void;
   setSubscription: (sub: UserSubscription | null) => void;
+  setLocale: (locale: Locale) => void;
   logout: () => void;
 }
 
@@ -33,6 +41,7 @@ export const useStore = create<AppState>((set) => ({
   searchQuery: '',
   activeFilter: 'All',
   subscription: null,
+  locale: 'en',
 
   setUser: (user) => set({ user }),
   
@@ -62,6 +71,8 @@ export const useStore = create<AppState>((set) => ({
 
   setSubscription: (subscription) => set({ subscription }),
 
+  setLocale: (locale) => set({ locale }),
+
   logout: () => set({ 
     user: null, 
     currentView: ViewMode.Landing,
@@ -70,3 +81,4 @@ export const useStore = create<AppState>((set) => ({
     activeFilter: 'All'
   }),
 }));
+
