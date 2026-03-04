@@ -9,14 +9,16 @@ import React from 'react';
 import { ViewMode } from '../types';
 import { TRENDING_TOPICS } from '../constants';
 import { useStore } from '../store/useStore';
-import { useT } from '../i18n';
+import { useTranslation } from 'react-i18next';
 import { House, Compass, Library, CircleUser, FlaskConical, Languages } from 'lucide-react';
+import { UserButton, useUser } from '@clerk/react';
 
 const Sidebar: React.FC = () => {
-  const { currentView, setView, user, setSearchQuery, setActiveFilter, locale, setLocale } = useStore();
-  const { t } = useT();
+  const { currentView, setView, setSearchQuery, setActiveFilter } = useStore();
+  const { user: clerkUser } = useUser();
+  const { t, i18n } = useTranslation();
 
-  const toggleLang = () => setLocale(locale === 'en' ? 'zh' : 'en');
+  const toggleLang = () => i18n.changeLanguage(i18n.language.startsWith('en') ? 'zh' : 'en');
 
   const navItems = [
     { id: ViewMode.Home, label: t('navHome'), icon: House },
@@ -89,12 +91,9 @@ const Sidebar: React.FC = () => {
 
       <div className="border-t border-gray-100 pt-4 px-2">
         <div onClick={() => handleNavClick(ViewMode.Account)} className="flex items-center gap-3 cursor-pointer hover:opacity-80">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-primary to-blue-500 flex items-center justify-center text-white text-xs font-bold uppercase">
-            {user?.name?.[0] || 'U'}
-          </div>
+          <UserButton appearance={{ elements: { userButtonAvatarBox: "w-8 h-8" } }} />
           <div className="flex flex-col overflow-hidden">
-            <span className="text-sm font-medium text-text-main truncate">{user?.name || t('user')}</span>
-            <span className="text-xs text-text-secondary">{t('researcher')}</span>
+            <span className="text-sm font-medium text-text-main truncate">{(clerkUser.firstName+" "+clerkUser.lastName) || clerkUser?.primaryEmailAddress?.emailAddress || t('user')}</span>
           </div>
         </div>
       </div>

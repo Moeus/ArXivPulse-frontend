@@ -6,15 +6,13 @@
  */
 
 import React from 'react';
-import { useStore } from '../store/useStore';
-import { useT } from '../i18n';
+import { useTranslation } from 'react-i18next';
 import { FlaskConical, Languages } from 'lucide-react';
 
 const MobileHeader: React.FC = () => {
-  const { locale, setLocale } = useStore();
-  const { t } = useT();
+  const { t, i18n } = useTranslation();
 
-  const toggleLang = () => setLocale(locale === 'en' ? 'zh' : 'en');
+  const toggleLang = () => i18n.changeLanguage(i18n.language.startsWith('en') ? 'zh' : 'en');
 
   return (
     <div className="lg:hidden flex items-center justify-between px-5 py-3 border-b border-gray-100 bg-white/90 backdrop-blur-xl flex-shrink-0 z-40">

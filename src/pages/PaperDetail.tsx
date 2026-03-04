@@ -11,12 +11,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import { ChatMessage, ViewMode } from '../types';
 import { GoogleGenAI } from '@google/genai';
 import { useStore } from '../store/useStore';
-import { useT } from '../i18n';
+import { useTranslation } from 'react-i18next';
 import { ArrowLeft, ExternalLink, Bookmark, BookmarkCheck, FileText, Sparkles, Bot, X, ChevronDown, ArrowUp } from 'lucide-react';
 
 const PaperDetail: React.FC = () => {
   const { selectedPaper: paper, setView, previousView, toggleBookmark } = useStore();
-  const { t } = useT();
+  const { t } = useTranslation();
   
   const [showAI, setShowAI] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -115,7 +115,10 @@ const PaperDetail: React.FC = () => {
           <header className="flex flex-col gap-4">
             <div className="flex items-center gap-3 flex-wrap">
               <span className="px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest">
-                {paper.mainCategory}
+                {paper.category}
+              </span>
+              <span className="px-2.5 py-1 rounded-md bg-gray-900 text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-yellow-400 to-amber-500 text-xs font-bold tracking-wide">
+                {paper.journal}
               </span>
               <span className="w-1 h-1 rounded-full bg-gray-300"></span>
               <span className="text-xs text-text-secondary font-medium">{t('publishedOn')} {paper.publishedDate}</span>

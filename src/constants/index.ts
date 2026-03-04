@@ -4,7 +4,7 @@
  * 后续接入后端 API 后，MOCK_PAPERS 将被替换为真实数据
  */
 
-import { Paper, TrendingTopic, StatItem, DailyData } from "../types/index.ts";
+import { Paper, TrendingTopic, DailyData } from "../types/index.ts";
 
 export const MOCK_PAPERS: Paper[] = [
     {
@@ -12,8 +12,8 @@ export const MOCK_PAPERS: Paper[] = [
         title: 'Attention Is All You Need',
         abstract: 'The dominant sequence transduction models are based on complex recurrent or convolutional neural networks that include an encoder and a decoder. The best performing models also connect the encoder and decoder through an attention mechanism. We propose a new simple network architecture, the Transformer...',
         authors: ['Ashish Vaswani', 'Noam Shazeer'],
-        mainCategory: 'cs.AI',
-        subCategory: 'Machine Learning',
+        category: 'cs.AI',
+        journal: 'ACL',
         publishedDate: '12 Jun 2017',
         isBookmarked: false
     },
@@ -22,8 +22,8 @@ export const MOCK_PAPERS: Paper[] = [
         title: 'Quantum Supremacy Using a Programmable Superconducting Processor',
         abstract: 'The promise of quantum computers is that certain computational tasks might be executed exponentially faster on a quantum processor than on a classical processor. A fundamental challenge is to build a high-fidelity processor capable of running quantum algorithms in an exponentially large computational space.',
         authors: ['Frank Arute', 'Kunal Arya'],
-        mainCategory: 'physics.quant-ph',
-        subCategory: 'Quantum Computing',
+        category: 'physics.quant-ph',
+        journal: 'arXiv preprint arXiv:1910.04182',
         publishedDate: '23 Oct 2019',
         isBookmarked: false
     },
@@ -32,8 +32,8 @@ export const MOCK_PAPERS: Paper[] = [
         title: 'Mapping the connectome of the human brain',
         abstract: 'Understanding the structural connectivity of the human brain is crucial for unraveling its functional organization. Here, we present a comprehensive map of the human connectome derived from high-resolution diffusion imaging data, revealing new insights into brain network topology.',
         authors: ['Sarah Jenkins', 'David Chen'],
-        mainCategory: 'q-bio.NC',
-        subCategory: 'Neuroscience',
+        category: 'q-bio.NC',
+        journal: 'arXiv preprint arXiv:2311.00001',
         publishedDate: '05 Nov 2023',
         isBookmarked: true
     },
@@ -42,8 +42,8 @@ export const MOCK_PAPERS: Paper[] = [
         title: 'Geometric structures on 3-manifolds',
         abstract: 'We explore the classification of geometric structures on 3-manifolds, focusing on the interplay between hyperbolic geometry and topological invariants. This work extends the foundational results of Thurston\'s geometrization conjecture.',
         authors: ['Elena Rodriguez'],
-        mainCategory: 'math.GT',
-        subCategory: 'Topology',
+        category: 'math.GT',
+        journal: 'arXiv preprint arXiv:2401.00001',
         publishedDate: '15 Jan 2024',
         isBookmarked: false
     }
@@ -56,12 +56,6 @@ export const TRENDING_TOPICS: TrendingTopic[] = [
     { name: 'Quant. Biology', count: '850' }
 ];
 
-export const DASHBOARD_STATS: StatItem[] = [
-    { label: 'Days of Service', value: '1,248', trend: '+1', icon: 'calendar_today', color: 'text-blue-600 bg-blue-50' },
-    { label: 'Papers Sent', value: '84.2k', trend: '+12%', icon: 'send', color: 'text-purple-600 bg-purple-50' },
-    { label: 'Crawled Index', value: '2.4M', trend: '+5.4k', icon: 'travel_explore', color: 'text-emerald-600 bg-emerald-50' },
-    { label: 'AI Summaries', value: '12.8k', trend: '+8%', icon: 'auto_awesome', color: 'text-amber-600 bg-amber-50' },
-];
 
 export const ACTIVITY_CHART: DailyData[] = [
     { day: 'Mon', value: 450 },

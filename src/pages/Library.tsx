@@ -7,14 +7,14 @@
 import React, { useMemo } from 'react';
 import { ViewMode } from '../types';
 import { useStore } from '../store/useStore';
-import { useT } from '../i18n';
+import { useTranslation } from 'react-i18next';
 import PaperCard from '../components/PaperCard';
 import EmptyState from '../components/EmptyState';
 import { Bookmark } from 'lucide-react';
 
 const Library: React.FC = () => {
   const { papers, setView } = useStore();
-  const { t } = useT();
+  const { t } = useTranslation();
 
   /** 从全部论文中过滤出已收藏的 */
   const bookmarkedPapers = useMemo(() => papers.filter(p => p.isBookmarked), [papers]);

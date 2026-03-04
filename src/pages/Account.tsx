@@ -9,74 +9,55 @@
 import React, { useState } from 'react';
 import { Frequency, TimeSlot } from '../types';
 import { useStore } from '../store/useStore';
-import { useT } from '../i18n';
-import type { TranslationKeys } from '../i18n';
+import { useTranslation } from 'react-i18next';
+import { useClerk, useUser } from '@clerk/react';
 import { Terminal, Atom, Calculator, Dna, Mail, LogOut, RefreshCw, Clock, CheckCircle, X, ChevronDown, Calendar, CalendarDays, Gavel, TriangleAlert, Info, BadgeCheck, FileText, Rocket, Loader } from 'lucide-react';
+import { ARXIV_CATEGORIES } from '../constants/ArxivCategory';
 
 interface DomainGroup {
   id: string;
-  nameKey: TranslationKeys;
+  nameKey: string;
   icon: React.ElementType;
   color: string;
-  topics: { id: string; nameKey: TranslationKeys }[];
+  topics: { id: string; nameKey: string; originalName: string }[];
 }
 
-const DOMAIN_GROUPS: DomainGroup[] = [
-  {
-    id: 'cs',
-    nameKey: 'computerScience',
-    icon: Terminal,
-    color: 'bg-orange-100 text-orange-600',
-    topics: [
-      { id: 'cs.AI', nameKey: 'artificialIntelligence' },
-      { id: 'cs.CV', nameKey: 'computerVision' },
-      { id: 'cs.CR', nameKey: 'cryptography' },
-      { id: 'cs.NI', nameKey: 'networking' },
-      { id: 'cs.LG', nameKey: 'machineLearning' },
-    ]
-  },
-  {
-    id: 'physics',
-    nameKey: 'physics',
-    icon: Atom,
-    color: 'bg-blue-100 text-blue-600',
-    topics: [
-      { id: 'physics.quant-ph', nameKey: 'quantumPhysics' },
-      { id: 'physics.optics', nameKey: 'optics' },
-      { id: 'physics.gen-ph', nameKey: 'generalPhysics' },
-    ]
-  },
-  {
-    id: 'math',
-    nameKey: 'mathematics',
-    icon: Calculator,
-    color: 'bg-green-100 text-green-600',
-    topics: [
-      { id: 'math.ST', nameKey: 'statistics' },
-      { id: 'math.GT', nameKey: 'topology' },
-      { id: 'math.CO', nameKey: 'combinatorics' },
-    ]
-  },
-  {
-    id: 'bio',
-    nameKey: 'quantitativeBiology',
-    icon: Dna,
-    color: 'bg-red-100 text-red-600',
-    topics: [ // Assuming bio topics existed or adding placeholder if strict match needed. 
-              // Wait, previous file had 3 groups, I should stick to 3 groups unless I want to add Bio. 
-              // The read file ONLY had 3 groups. I will stick to 3 groups.
-    ]
-  }
-];
+const DOMAIN_CONFIG: Record<string, { id: string, nameKey: string, icon: React.ElementType, color: string }> = {
+  'Computer Science': { id: 'cs', nameKey: 'computerScience', icon: Terminal, color: 'bg-orange-100 text-orange-600' },
+  'Physics': { id: 'physics', nameKey: 'physics', icon: Atom, color: 'bg-blue-100 text-blue-600' },
+  'Statistics': { id: 'math', nameKey: 'statistics', icon: Calculator, color: 'bg-green-100 text-green-600' },
+  'Quantitative Biology': { id: 'bio', nameKey: 'quantitativeBiology', icon: Dna, color: 'bg-red-100 text-red-600' }
+};
+
+const DOMAIN_GROUPS: DomainGroup[] = Object.entries(DOMAIN_CONFIG).map(([domainName, config]) => {
+  const topics = ARXIV_CATEGORIES.filter(c => c.domain === domainName).map(c => {
+    const originalName = c.branch.trim();
+    const camelKey = originalName.split(/\s+/).map((word, index) => 
+      index === 0 ? word.charAt(0).toLowerCase() + word.slice(1) : word.charAt(0).toUpperCase() + word.slice(1)
+    ).join('');
+    
+    return {
+      id: c.category_id,
+      nameKey: camelKey,
+      originalName
+    };
+  });
+
+  return {
+    ...config,
+    topics
+  };
+});
 
 const Account: React.FC = () => {
-  const { subscription, setSubscription, logout, user } = useStore();
-  const { t } = useT();
+  const { subscription, setSubscription, resetUI } = useStore();
+  const { signOut } = useClerk();
+  const { user: clerkUser } = useUser();
+  const { t } = useTranslation();
   const [isEditing, setIsEditing] = useState(false);
   
   const [selectedTopicIds, setSelectedTopicIds] = useState<string[]>(subscription?.domains || ['cs.AI', 'cs.CV']);
   const [freq, setFreq] = useState<Frequency>(subscription?.frequency || 'daily');
-  const [showEmailPreview, setShowEmailPreview] = useState(true);
   const [expandedGroups, setExpandedGroups] = useState<string[]>(['cs']);
   const [agreed, setAgreed] = useState(false);
 
@@ -110,7 +91,10 @@ const Account: React.FC = () => {
   const getTopicName = (id: string) => {
     for (const group of DOMAIN_GROUPS) {
       const topic = group.topics.find(tp => tp.id === id);
-      if (topic) return t(topic.nameKey);
+      if (topic) {
+        const translated = t(topic.nameKey);
+        return translated !== topic.nameKey ? translated : topic.originalName;
+      }
     }
     return id;
   };
@@ -133,7 +117,7 @@ const Account: React.FC = () => {
         >
           {t('configurePulse')}
         </button>
-        <button onClick={logout} className="mt-8 text-sm font-bold text-red-500 hover:text-red-600 flex items-center gap-2">
+        <button onClick={() => { resetUI(); signOut(); }} className="mt-8 text-sm font-bold text-red-500 hover:text-red-600 flex items-center gap-2">
            <LogOut size={16} />
            {t('logout')}
         </button>
@@ -146,10 +130,10 @@ const Account: React.FC = () => {
       <div className="flex justify-between items-start">
         <div className="flex flex-col gap-2">
           <h1 className="text-4xl font-black text-text-main tracking-tight">{t('accountPreferences')}</h1>
-          <p className="text-text-secondary text-lg">{t('signedInAs')} {user?.email}</p>
+          <p className="text-text-secondary text-lg">{t('signedInAs')} {clerkUser?.primaryEmailAddress?.emailAddress}</p>
         </div>
         <button 
-          onClick={logout}
+          onClick={() => { resetUI(); signOut(); }}
           className="px-4 py-2 border border-red-100 rounded-xl text-red-500 hover:bg-red-50 text-xs font-black uppercase tracking-widest transition-all flex items-center gap-2"
         >
           <LogOut size={18} />
@@ -209,20 +193,7 @@ const Account: React.FC = () => {
                 </div>
               </div>
               
-              {/* Selected Topics Pills */}
-              {selectedTopicIds.length > 0 && (
-                <div className="px-6 py-4 bg-primary/[0.02] border-b border-gray-100">
-                  <div className="flex flex-wrap gap-2">
-                    {selectedTopicIds.map(id => (
-                      <div key={id} className="group flex items-center gap-2 bg-white text-primary border border-primary/20 px-3 py-1.5 rounded-full text-xs font-bold shadow-sm hover:shadow-md hover:border-primary/40 transition-all">
-                        <CheckCircle size={14} />
-                        {getTopicName(id)}
-                        <button onClick={() => handleToggleTopic(id)} className="opacity-50 hover:opacity-100 hover:text-red-500 transition-all"><X size={14} /></button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
+
               
               {/* Domain Groups */}
               <div className="p-4 flex flex-col gap-2">
@@ -239,7 +210,8 @@ const Account: React.FC = () => {
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-[10px] font-bold text-primary bg-primary/5 px-2 py-1 rounded-lg">
+                        {/* 如果选择内容的长度为0，则使用secondary颜色 */}
+                        <span className={`text-[10px] font-bold ${group.topics.filter(tp => selectedTopicIds.includes(tp.id)).length > 0 ? 'text-primary bg-primary/5' : 'text-text-secondary bg-gray-50'} px-2 py-1 rounded-lg`}>
                           {group.topics.filter(tp => selectedTopicIds.includes(tp.id)).length} {t('selected')}
                         </span>
                         <ChevronDown size={20} className={`text-text-secondary transition-transform duration-200 ${expandedGroups.includes(group.id) ? 'rotate-180' : ''}`} />
@@ -264,7 +236,7 @@ const Account: React.FC = () => {
                                 onChange={() => handleToggleTopic(topic.id)} 
                                 className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary/20" 
                               />
-                              <span className={`text-sm ${isSelected ? 'text-primary font-bold' : 'text-text-main font-medium'}`}>{t(topic.nameKey)}</span>
+                              <span className={`text-sm ${isSelected ? 'text-primary font-bold' : 'text-text-main font-medium'}`}>{getTopicName(topic.id)}</span>
                             </label>
                           );
                         })}
@@ -377,16 +349,12 @@ const Account: React.FC = () => {
                   <p className="text-[10px] font-black uppercase text-text-secondary tracking-widest mb-2">{t('selectedTopics')}</p>
                   {selectedTopicIds.length > 0 ? (
                     <div className="flex flex-wrap gap-1.5">
-                      {selectedTopicIds.slice(0, 4).map(id => (
+                      {selectedTopicIds.map(id => (
                         <span key={id} className="px-2 py-1 bg-primary/5 text-primary rounded-lg text-[10px] font-bold">
                           {getTopicName(id)}
                         </span>
                       ))}
-                      {selectedTopicIds.length > 4 && (
-                        <span className="px-2 py-1 bg-gray-100 text-text-secondary rounded-lg text-[10px] font-bold">
-                          +{selectedTopicIds.length - 4} {t('more')}
-                        </span>
-                      )}
+
                     </div>
                   ) : (
                     <p className="text-xs text-text-secondary italic">{t('noTopicsSelected')}</p>

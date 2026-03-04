@@ -9,7 +9,7 @@
  */
 
 import React from 'react';
-import { useT } from '../i18n';
+import { useTranslation } from 'react-i18next';
 import { Brain, Atom, Calculator, Dna } from 'lucide-react';
 
 /** 分类配置 */
@@ -26,7 +26,7 @@ interface CategoryGridProps {
 }
 
 const CategoryGrid: React.FC<CategoryGridProps> = ({ activeFilter, onFilterChange }) => {
-  const { t } = useT();
+  const { t } = useTranslation();
 
   return (
     <section className="flex flex-col gap-4">
@@ -50,7 +50,16 @@ const CategoryGrid: React.FC<CategoryGridProps> = ({ activeFilter, onFilterChang
           return (
             <button
               key={cat.id}
-              onClick={() => onFilterChange(cat.id)}
+              onClick={() => {
+                if (activeFilter === cat.id)
+                  {
+                    onFilterChange('All')
+                  }
+                else
+                  {
+                    onFilterChange(cat.id)
+                  }
+              }}
               className={`flex flex-col items-center justify-center p-6 rounded-2xl border transition-all gap-3 group ${
                 activeFilter === cat.id
                   ? 'bg-primary/5 border-primary shadow-inner'

@@ -7,7 +7,7 @@
 import React, { useMemo } from 'react';
 import { Paper, ViewMode } from '../types';
 import { useStore } from '../store/useStore';
-import { useT } from '../i18n';
+import { useTranslation } from 'react-i18next';
 import { FlaskConical } from 'lucide-react';
 
 // 可复用组件
@@ -24,7 +24,7 @@ const Explore: React.FC = () => {
     activeFilter, setActiveFilter,
     setView, setSelectedPaper,
   } = useStore();
-  const { t } = useT();
+  const { t } = useTranslation();
 
   /** 根据搜索关键词和分类筛选计算过滤后的论文列表 */
   const filteredPapers = useMemo(() => {
@@ -33,8 +33,7 @@ const Explore: React.FC = () => {
     // 按分类筛选
     if (activeFilter !== 'All') {
       result = result.filter(p =>
-        p.mainCategory.toLowerCase().includes(activeFilter.toLowerCase()) ||
-        p.subCategory.toLowerCase().includes(activeFilter.toLowerCase())
+        p.category.toLowerCase().includes(activeFilter.toLowerCase())
       );
     }
 
@@ -69,7 +68,7 @@ const Explore: React.FC = () => {
   return (
     <div className="flex flex-col gap-8 animate-fade-in pb-12">
       {/* 精选论文 Hero 卡片（无筛选时显示） */}
-      {!searchQuery && activeFilter === 'All' && featuredPaper && (
+      {!searchQuery && featuredPaper && (
         <FeaturedPaper paper={featuredPaper} onRead={() => handlePaperClick(featuredPaper)} />
       )}
 

@@ -10,7 +10,7 @@
 import React from 'react';
 import { Paper } from '../types';
 import { useStore } from '../store/useStore';
-import { useT } from '../i18n';
+import { useTranslation } from 'react-i18next';
 import { Sparkles, ArrowRight, Bookmark, BookmarkCheck } from 'lucide-react';
 
 interface FeaturedPaperProps {
@@ -20,7 +20,7 @@ interface FeaturedPaperProps {
 
 const FeaturedPaper: React.FC<FeaturedPaperProps> = ({ paper, onRead }) => {
   const { toggleBookmark } = useStore();
-  const { t } = useT();
+  const { t } = useTranslation();
 
   return (
     <section className="relative overflow-hidden rounded-3xl bg-background-dark text-white p-8 md:p-12 shadow-2xl shadow-primary/20">

@@ -5,8 +5,8 @@
  */
 
 import React from 'react';
-import { DASHBOARD_STATS, ACTIVITY_CHART, CATEGORY_CHART } from '../constants';
-import { useT } from '../i18n';
+import { ACTIVITY_CHART, CATEGORY_CHART } from '../constants';
+import { useTranslation } from 'react-i18next';
 import { RefreshCw, Sparkles, TrendingUp, Send, Globe } from 'lucide-react';
 
 // 可复用组件
@@ -17,7 +17,7 @@ import EventTimeline from '../components/EventTimeline';
 import { Calendar } from 'lucide-react';
 
 const Dashboard: React.FC = () => {
-  const { t } = useT();
+  const { t } = useTranslation();
 
   /** 近期平台事件数据 */
   const events = [

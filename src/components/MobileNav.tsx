@@ -7,12 +7,12 @@
 import React from 'react';
 import { ViewMode } from '../types';
 import { useStore } from '../store/useStore';
-import { useT } from '../i18n';
+import { useTranslation } from 'react-i18next';
 import { LayoutGrid, Compass, Bookmark, User } from 'lucide-react';
 
 const MobileNav: React.FC = () => {
   const { currentView, setView, setSearchQuery, setActiveFilter } = useStore();
-  const { t } = useT();
+  const { t } = useTranslation();
 
   /** 导航项配置 */
   const navItems = [

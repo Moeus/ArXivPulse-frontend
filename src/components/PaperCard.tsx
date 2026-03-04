@@ -7,9 +7,8 @@
 
 import React, { useState } from 'react';
 import { Paper, ViewMode } from '../types';
-// import { geminiService } from '../services/geminiService';
 import { useStore } from '../store/useStore';
-import { useT } from '../i18n';
+import { useTranslation } from 'react-i18next';
 import { Bookmark, BookmarkCheck, Sparkles } from 'lucide-react';
 
 interface PaperCardProps {
@@ -18,7 +17,7 @@ interface PaperCardProps {
 
 const PaperCard: React.FC<PaperCardProps> = ({ paper }) => {
   const { toggleBookmark, setSelectedPaper, setView } = useStore();
-  const { t } = useT();
+  const { t } = useTranslation();
   const [showSummary, setShowSummary] = useState(false);
   const [aiSummary, setAiSummary] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -56,11 +55,11 @@ const PaperCard: React.FC<PaperCardProps> = ({ paper }) => {
     >
       <div className="flex justify-between items-start mb-3">
         <div className="flex gap-2 mb-2 flex-wrap">
-          <span className={`px-2.5 py-1 rounded-md text-xs font-semibold ${getCategoryColor(paper.mainCategory)}`}>
-            {paper.mainCategory}
+          <span className={`px-2.5 py-1 rounded-md text-xs font-semibold ${getCategoryColor(paper.category)}`}>
+            {paper.category}
           </span>
-          <span className="px-2.5 py-1 rounded-md bg-gray-50 text-text-secondary text-xs font-medium">
-            {paper.subCategory}
+          <span className="px-2.5 py-1 rounded-md bg-gray-900 text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-yellow-400 to-amber-500 text-xs font-bold tracking-wide">
+            {paper.journal}
           </span>
         </div>
         <button 
