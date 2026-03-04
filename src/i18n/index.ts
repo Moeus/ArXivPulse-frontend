@@ -95,8 +95,10 @@ const translations: Record<string, [string, string]> = {
   'signedInAs': ['已登录为', 'Signed in as'],
   'activeDomains': ['活跃领域', 'Active Domains'],
   'frequency': ['频率', 'Frequency'],
-  'nextDelivery': ['下次推送', 'Next Delivery'],
-  'tomorrowMorning': ['明天早上', 'Tomorrow Morning'],
+  'activeSubscription': ['订阅中', 'Active'],
+  'since': ['订阅于', 'Since'],
+  'manageSubscription': ['管理订阅', 'Manage Subscription'],
+  'researcher': ['研究者', 'Researcher'],
   'updatePreferences': ['更新偏好设置', 'Update Preferences'],
   'researchDomains': ['研究领域', 'Research Domains'],
   'selectTopics': ['选择您想关注的主题', 'Select the topics you want to follow'],
@@ -130,23 +132,32 @@ const translations: Record<string, [string, string]> = {
   'agreeToProtocol': ['请先同意协议以继续', 'Agree to protocol to continue'],
   'selectAtLeastOneTopic': ['请至少选择一个主题', 'Select at least one topic'],
   'saveSubscription': ['保存订阅', 'Save Subscription'],
+  'cancelSubscription': ['取消订阅', 'Cancel Subscription'],
+  'cancelSubscriptionConfirm': ['确定要取消订阅吗？此操作无法撤销。', 'Are you sure you want to cancel? This cannot be undone.'],
+  'confirmCancel': ['确认取消', 'Confirm Cancel'],
+  'keepSubscription': ['保留订阅', 'Keep Subscription'],
+  'editSubscription': ['编辑订阅', 'Edit Subscription'],
 
   // Domain groups
   'computerScience': ['计算机科学', 'Computer Science'],
   'physics': ['物理学', 'Physics'],
-  'mathematics': ['数学', 'Mathematics'],
+  'statistics': ['统计学', 'Statistics'],
+  'quantitativeBiology': ['定量生物学', 'Quantitative Biology'],
+
   'artificialIntelligence': ['人工智能', 'Artificial Intelligence'],
   'computerVision': ['计算机视觉', 'Computer Vision'],
-  'cryptography': ['密码学', 'Cryptography'],
-  'networking': ['网络技术', 'Networking'],
   'machineLearning': ['机器学习', 'Machine Learning'],
+  'computationAndLanguage': ['计算与语言学', 'Computation and Language'],
+
   'quantumPhysics': ['量子物理学', 'Quantum Physics'],
+  'atomicPhysics': ['原子物理学', 'Atomic Physics'],
   'optics': ['光学', 'Optics'],
-  'generalPhysics': ['普通物理学', 'General Physics'],
-  'statistics': ['统计学', 'Statistics'],
-  'topology': ['拓扑学', 'Topology'],
-  'combinatorics': ['组合数学', 'Combinatorics'],
-  'quantitativeBiology': ['定量生物学', 'Quantitative Biology'],
+
+  'applications': ['应用统计学', 'Applications Statistics'],
+  'methodology': ['统计方法论', 'Methodology'],
+
+  'genomics': ['基因组学', 'Genomics'],
+  'neuronsAndCognition': ['神经元与认知', 'Neurons and Cognition'],
 
   // Language
   'switchLang': ['中', 'EN'],
