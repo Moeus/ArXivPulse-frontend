@@ -7,7 +7,8 @@
 
 import React, { useState } from 'react';
 import { Paper, ViewMode } from '../types';
-import { useStore } from '../store/useStore';
+import { useAppStore } from '../store/appStore';
+import { usePaperStore } from '../store/paperStore';
 import { useTranslation } from 'react-i18next';
 import { Bookmark, BookmarkCheck, Sparkles } from 'lucide-react';
 
@@ -16,7 +17,8 @@ interface PaperCardProps {
 }
 
 const PaperCard: React.FC<PaperCardProps> = ({ paper }) => {
-  const { toggleBookmark, setSelectedPaper, setView } = useStore();
+  const setView = useAppStore(state => state.setView);
+  const { toggleBookmark, setSelectedPaper } = usePaperStore();
   const { t } = useTranslation();
   const [showSummary, setShowSummary] = useState(false);
   const [aiSummary, setAiSummary] = useState<string | null>(null);

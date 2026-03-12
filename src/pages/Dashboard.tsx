@@ -58,7 +58,7 @@ const Dashboard: React.FC = () => {
       </div>
 
       {/* 事件时间线 */}
-      <EventTimeline title={t('recentPlatformEvents')} events={events} />
+      {/* <EventTimeline title={t('recentPlatformEvents')} events={events} /> */}
     </div>
   );
 };

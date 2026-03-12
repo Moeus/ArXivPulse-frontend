@@ -10,12 +10,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ChatMessage, ViewMode } from '../types';
 import { GoogleGenAI } from '@google/genai';
-import { useStore } from '../store/useStore';
+import { useAppStore } from '../store/appStore';
+import { usePaperStore } from '../store/paperStore';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft, ExternalLink, Bookmark, BookmarkCheck, FileText, Sparkles, Bot, X, ChevronDown, ArrowUp } from 'lucide-react';
 
 const PaperDetail: React.FC = () => {
-  const { selectedPaper: paper, setView, previousView, toggleBookmark } = useStore();
+  const { setView, previousView } = useAppStore();
+  const { selectedPaper: paper, toggleBookmark } = usePaperStore();
   const { t } = useTranslation();
   
   const [showAI, setShowAI] = useState(false);

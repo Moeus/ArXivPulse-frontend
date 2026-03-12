@@ -8,16 +8,15 @@
 
 import React, { useState } from 'react';
 import { Frequency } from '../types';
-import { useStore } from '../store/useStore';
+import { useAppStore } from '../store/appStore';
+import { useUserStore } from '../store/userStore';
 import { useTranslation } from 'react-i18next';
-import { useClerk, useUser } from '@clerk/react';
 import { Mail, LogOut, Clock, CheckCircle, X, ChevronDown, Calendar, CalendarDays, Gavel, TriangleAlert, Info, BadgeCheck, Rocket, Loader, Pencil, ArrowLeft, Sparkles, User } from 'lucide-react';
 import { ARXIV_CATEGORIES } from '../constants/ArxivCategory';
 
 const Account: React.FC = () => {
-  const { subscription, setSubscription, resetUI } = useStore();
-  const { signOut } = useClerk();
-  const { user: clerkUser } = useUser();
+  const { resetUI } = useAppStore();
+  const { subscription, setSubscription, user, logout } = useUserStore();
   const { t } = useTranslation();
   const [isEditing, setIsEditing] = useState(false);
   const [confirmCancel, setConfirmCancel] = useState(false);
@@ -40,6 +39,11 @@ const Account: React.FC = () => {
 
   const handleCancel = () => {
     setIsEditing(false);
+  };
+
+  const handleLogout = () => {
+    resetUI();
+    logout();
   };
 
   const getTopicName = (id: string) => {
@@ -74,7 +78,7 @@ const Account: React.FC = () => {
         >
           {t('configurePulse')}
         </button>
-        <button onClick={() => { resetUI(); signOut(); }} className="mt-8 text-sm font-bold text-red-500 hover:text-red-600 flex items-center gap-2">
+        <button onClick={handleLogout} className="mt-8 text-sm font-bold text-red-500 hover:text-red-600 flex items-center gap-2">
            <LogOut size={16} />
            {t('logout')}
         </button>
@@ -102,9 +106,9 @@ const Account: React.FC = () => {
               </div>
               <div className="flex flex-col gap-1">
                 <h1 className="text-xl font-black text-white leading-tight">
-                  {clerkUser?.fullName || clerkUser?.firstName || t('researcher')}
+                  {user?.username || t('researcher')}
                 </h1>
-                <p className="text-sm text-white/70">{clerkUser?.primaryEmailAddress?.emailAddress}</p>
+                <p className="text-sm text-white/70">{user?.email}</p>
                 <span className="mt-1 inline-flex items-center gap-1.5 px-2.5 py-1 bg-white/15 text-white text-[10px] font-black uppercase tracking-widest rounded-full border border-white/20 w-fit">
                   <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
                   {t('activeSubscription')}
@@ -112,7 +116,7 @@ const Account: React.FC = () => {
               </div>
             </div>
             <button
-              onClick={() => { resetUI(); signOut(); }}
+              onClick={handleLogout}
               className="shrink-0 px-3 py-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl text-white/80 hover:text-white text-xs font-bold uppercase tracking-widest transition-all flex items-center gap-1.5"
             >
               <LogOut size={14} />
@@ -224,7 +228,7 @@ const Account: React.FC = () => {
           </div>
           <div>
             <h1 className="text-xl font-black text-text-main tracking-tight">{t('editSubscription')}</h1>
-            <p className="text-xs text-text-secondary mt-0.5">{clerkUser?.primaryEmailAddress?.emailAddress}</p>
+            <p className="text-xs text-text-secondary mt-0.5">{user?.email}</p>
           </div>
         </div>
         {subscription && (

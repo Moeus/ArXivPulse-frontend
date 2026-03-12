@@ -1,21 +1,20 @@
 /**
  * Sidebar — 桌面端侧边栏导航组件
  * 仅在大屏幕（lg 及以上）显示
- * 包含：应用 Logo、主导航菜单、热门话题快捷入口、用户头像
+ * 包含：应用 Logo、主导航菜单、用户头像
  * 切换导航时自动重置搜索和筛选状态
  */
 
 import React from 'react';
 import { ViewMode } from '../types';
-import { TRENDING_TOPICS } from '../constants';
-import { useStore } from '../store/useStore';
+import { useAppStore } from '../store/appStore';
+import { useUserStore } from '../store/userStore';
 import { useTranslation } from 'react-i18next';
-import { House, Compass, Library, CircleUser, FlaskConical, Languages } from 'lucide-react';
-import { UserButton, useUser } from '@clerk/react';
+import { House, Compass, Library, CircleUser, FlaskConical, Languages, LogOut } from 'lucide-react';
 
 const Sidebar: React.FC = () => {
-  const { currentView, setView, setSearchQuery, setActiveFilter } = useStore();
-  const { user: clerkUser } = useUser();
+  const { currentView, setView, setSearchQuery, setActiveFilter, resetUI } = useAppStore();
+  const { user, logout } = useUserStore();
   const { t, i18n } = useTranslation();
 
   const toggleLang = () => i18n.changeLanguage(i18n.language.startsWith('en') ? 'zh' : 'en');
@@ -33,6 +32,19 @@ const Sidebar: React.FC = () => {
       setSearchQuery('');
       setActiveFilter('All');
     }
+  };
+
+  const handleLogout = () => {
+    resetUI();
+    logout();
+    setView(ViewMode.Landing);
+  };
+
+  /** 获取用户名首字母作为头像 */
+  const getInitial = () => {
+    if (user?.username) return user.username.charAt(0).toUpperCase();
+    if (user?.email) return user.email.charAt(0).toUpperCase();
+    return 'U';
   };
 
   return (
@@ -72,29 +84,26 @@ const Sidebar: React.FC = () => {
           })}
         </nav>
 
-        <div className="flex flex-col gap-3 px-2">
-          <p className="text-xs font-semibold uppercase text-text-secondary tracking-wider">{t('trending')}</p>
-          <div className="flex flex-col gap-2">
-            {TRENDING_TOPICS.map((topic) => (
-              <button
-                key={topic.name}
-                onClick={() => { setView(ViewMode.Explore); setActiveFilter(topic.name); }}
-                className="group flex items-center justify-between text-sm text-text-main hover:text-primary transition-colors text-left"
-              >
-                <span>{topic.name}</span>
-                <span className="text-xs text-text-secondary group-hover:text-primary/70">{topic.count}</span>
-              </button>
-            ))}
-          </div>
-        </div>
       </div>
 
       <div className="border-t border-gray-100 pt-4 px-2">
-        <div onClick={() => handleNavClick(ViewMode.Account)} className="flex items-center gap-3 cursor-pointer hover:opacity-80">
-          <UserButton appearance={{ elements: { userButtonAvatarBox: "w-8 h-8" } }} />
-          <div className="flex flex-col overflow-hidden">
-            <span className="text-sm font-medium text-text-main truncate">{(clerkUser.firstName+" "+clerkUser.lastName) || clerkUser?.primaryEmailAddress?.emailAddress || t('user')}</span>
+        <div className="flex items-center justify-between">
+          <div onClick={() => handleNavClick(ViewMode.Account)} className="flex items-center gap-3 cursor-pointer hover:opacity-80 flex-1 min-w-0">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary-light flex items-center justify-center text-white text-sm font-black shrink-0">
+              {getInitial()}
+            </div>
+            <div className="flex flex-col overflow-hidden">
+              <span className="text-sm font-medium text-text-main truncate">{user?.username || t('user')}</span>
+              <span className="text-[10px] text-text-secondary truncate">{user?.email}</span>
+            </div>
           </div>
+          <button
+            onClick={handleLogout}
+            className="shrink-0 p-1.5 text-text-secondary hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+            title={t('logout')}
+          >
+            <LogOut size={16} />
+          </button>
         </div>
       </div>
     </aside>

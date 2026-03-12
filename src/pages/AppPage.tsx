@@ -7,7 +7,7 @@
 
 import React from 'react';
 import { ViewMode } from '../types';
-import { useStore } from '../store/useStore';
+import { useAppStore } from '../store/appStore';
 
 // 布局组件
 import Sidebar from '../components/Sidebar';
@@ -20,9 +20,8 @@ import Explore from './Explore';
 import Library from './Library';
 import Account from './Account';
 import PaperDetail from './PaperDetail';
-
 const AppPage: React.FC = () => {
-  const { currentView } = useStore();
+  const currentView = useAppStore(state => state.currentView);
 
   /** 根据当前视图渲染对应页面 */
   const renderView = () => {

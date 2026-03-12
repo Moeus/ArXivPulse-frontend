@@ -9,7 +9,7 @@
 
 import React from 'react';
 import { Paper } from '../types';
-import { useStore } from '../store/useStore';
+import { usePaperStore } from '../store/paperStore';
 import { useTranslation } from 'react-i18next';
 import { Sparkles, ArrowRight, Bookmark, BookmarkCheck } from 'lucide-react';
 
@@ -19,7 +19,7 @@ interface FeaturedPaperProps {
 }
 
 const FeaturedPaper: React.FC<FeaturedPaperProps> = ({ paper, onRead }) => {
-  const { toggleBookmark } = useStore();
+  const toggleBookmark = usePaperStore(state => state.toggleBookmark);
   const { t } = useTranslation();
 
   return (

@@ -7,11 +7,12 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { FlaskConical, Languages } from 'lucide-react';
-import { SignInButton, SignUpButton } from '@clerk/react';
-
+import { useAppStore } from '../store/appStore';
+import { ViewMode } from '../types';
 
 const Landing: React.FC = () => {
   const { t, i18n } = useTranslation();
+  const setView = useAppStore(state => state.setView);
 
   const toggleLang = () => i18n.changeLanguage(i18n.language.startsWith('en') ? 'zh' : 'en');
 
@@ -27,9 +28,12 @@ const Landing: React.FC = () => {
             <Languages size={18} />
             {t('switchLang')}
           </button>
-          <SignInButton mode="modal">
-            <button className="text-sm font-bold text-text-main hover:text-primary transition-colors">{t('signIn')}</button>
-          </SignInButton>
+          <button
+            onClick={() => setView(ViewMode.Auth)}
+            className="text-sm font-bold text-text-main hover:text-primary transition-colors"
+          >
+            {t('signIn')}
+          </button>
         </div>
       </nav>
 
@@ -37,9 +41,12 @@ const Landing: React.FC = () => {
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/5 text-primary text-xs font-black uppercase tracking-widest mb-8 animate-fade-in">{t('landingBadge')}</div>
         <h1 className="text-5xl md:text-7xl lg:text-8xl font-black text-text-main leading-[1.1] tracking-tight mb-8 max-w-5xl">{t('landingTitle')}<span className="text-primary italic">{t('landingTitleHighlight')}</span></h1>
         <p className="text-lg md:text-xl text-text-secondary max-w-2xl leading-relaxed mb-12 font-medium">{t('landingDescription')}</p>
-        <SignUpButton mode="modal">
-          <button className="bg-primary text-white px-10 py-5 rounded-2xl font-black text-lg shadow-2xl shadow-primary/30 hover:scale-105 transition-all">{t('landingCta')}</button>
-        </SignUpButton>
+        <button
+          onClick={() => setView(ViewMode.Auth)}
+          className="bg-primary text-white px-10 py-5 rounded-2xl font-black text-lg shadow-2xl shadow-primary/30 hover:scale-105 transition-all"
+        >
+          {t('landingCta')}
+        </button>
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-[120px] -z-10 pointer-events-none"></div>
       </section>
     </div>

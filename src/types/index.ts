@@ -1,8 +1,14 @@
 /**
  * 类型定义文件
  * 定义项目中所有共享的 TypeScript 接口、枚举和类型
- * 用户信息由 Clerk 管理，不在此处定义
  */
+
+export interface User {
+    id: string;
+    username: string;
+    email: string;
+    avatar?: string;
+}
 
 export interface Paper {
     id: string;
@@ -21,7 +27,8 @@ export enum ViewMode {
     Library = 'library',
     Account = 'account',
     PaperDetail = 'paper_detail',
-    Landing = 'landing'
+    Landing = 'landing',
+    Auth = 'auth'
 }
 
 export interface TrendingTopic {

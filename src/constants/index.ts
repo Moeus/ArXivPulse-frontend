@@ -1,10 +1,10 @@
 /**
  * 常量与模拟数据
- * 包含论文 Mock 数据、热门话题、Dashboard 统计和图表数据
+ * 包含论文 Mock 数据、Dashboard 统计和图表数据
  * 后续接入后端 API 后，MOCK_PAPERS 将被替换为真实数据
  */
 
-import { Paper, TrendingTopic, DailyData } from "../types/index.ts";
+import { Paper, DailyData } from "../types/index.ts";
 
 export const MOCK_PAPERS: Paper[] = [
     {
@@ -49,12 +49,6 @@ export const MOCK_PAPERS: Paper[] = [
     }
 ];
 
-export const TRENDING_TOPICS: TrendingTopic[] = [
-    { name: 'Computer Science', count: '2.4k' },
-    { name: 'Physics', count: '1.8k' },
-    { name: 'Mathematics', count: '1.2k' },
-    { name: 'Quant. Biology', count: '850' }
-];
 
 
 export const ACTIVITY_CHART: DailyData[] = [

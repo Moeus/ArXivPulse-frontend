@@ -159,6 +159,54 @@ const translations: Record<string, [string, string]> = {
   'genomics': ['基因组学', 'Genomics'],
   'neuronsAndCognition': ['神经元与认知', 'Neurons and Cognition'],
 
+  // Auth
+  'authLoginTitle': ['欢迎回来', 'Welcome Back'],
+  'authLoginSubtitle': ['登录您的账户，继续探索前沿研究', 'Sign in to your account to continue exploring cutting-edge research'],
+  'authRegisterTitle': ['加入 ArXivPulse', 'Join ArXivPulse'],
+  'authRegisterSubtitle': ['创建账户，开启您的个性化科研之旅', 'Create your account and start your personalized research journey'],
+  'authForgotTitle': ['重置密码', 'Reset Password'],
+  'authForgotSubtitle': ['输入您的注册邮箱，我们将发送验证码帮助您重置密码', 'Enter your registered email and we\'ll send a verification code to reset your password'],
+
+  'authAccountPlaceholder': ['用户名或邮箱', 'Username or Email'],
+  'authPasswordPlaceholder': ['密码', 'Password'],
+  'authEmailPlaceholder': ['邮箱地址', 'Email Address'],
+  'authUsernamePlaceholder': ['用户名', 'Username'],
+  'authCodePlaceholder': ['验证码', 'Verification Code'],
+  'authSetPassword': ['设置密码', 'Set Password'],
+  'authConfirmPassword': ['确认密码', 'Confirm Password'],
+  'authNewPassword': ['新密码', 'New Password'],
+
+  'authSendCode': ['发送', 'Send'],
+  'authLoginBtn': ['登录', 'Sign In'],
+  'authRegisterBtn': ['创建账户', 'Create Account'],
+  'authResetBtn': ['重置密码', 'Reset Password'],
+
+  'authForgotPassword': ['忘记密码？', 'Forgot Password?'],
+  'authNoAccount': ['还没有账户？', 'Don\'t have an account?'],
+  'authGoRegister': ['立即注册', 'Sign Up'],
+  'authHasAccount': ['已有账户？', 'Already have an account?'],
+  'authGoLogin': ['立即登录', 'Sign In'],
+  'authBackToLogin': ['返回登录', 'Back to Login'],
+
+  'authFillAllFields': ['请填写所有必填字段', 'Please fill in all required fields'],
+  'authPasswordMismatch': ['两次输入的密码不一致', 'Passwords do not match'],
+  'authPasswordTooShort': ['密码长度至少为6位', 'Password must be at least 6 characters'],
+  'authLoginFailed': ['登录失败，请检查您的账户和密码', 'Login failed, please check your credentials'],
+  'authRegisterFailed': ['注册失败，请重试', 'Registration failed, please try again'],
+  'authResetFailed': ['密码重置失败，请重试', 'Password reset failed, please try again'],
+  'authCodeSent': ['验证码已发送至您的邮箱', 'Verification code sent to your email'],
+  'authCodeFailed': ['验证码发送失败，请重试', 'Failed to send verification code, please try again'],
+  'authEnterEmail': ['请输入邮箱地址', 'Please enter your email address'],
+
+  // Auth Brand Panel
+  'authBrandTitle': ['探索科研的', 'Decode the Pulse of'],
+  'authBrandTitleHighlight': ['无限可能。', 'Scientific Discovery.'],
+  'authBrandDesc': ['ArXivPulse 运用前沿 AI 技术，将海量预印本论文转化为个性化智能推送，让您始终站在科研的最前沿。', 'ArXivPulse leverages cutting-edge AI to transform the vast pre-print landscape into personalized, intelligent feeds — keeping you at the frontier of research.'],
+  'authFeature1': ['AI 驱动的论文智能摘要', 'AI-powered paper summarization'],
+  'authFeature2': ['个性化科研领域订阅', 'Personalized research domain subscription'],
+  'authFeature3': ['实时科研趋势追踪', 'Real-time research trend tracking'],
+  'authFeature4': ['覆盖全球顶级预印本数据库', 'Global pre-print database coverage'],
+
   // Language
   'switchLang': ['中', 'EN'],
 };

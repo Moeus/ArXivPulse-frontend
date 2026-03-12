@@ -6,7 +6,8 @@
 
 import React, { useMemo } from 'react';
 import { Paper, ViewMode } from '../types';
-import { useStore } from '../store/useStore';
+import { useAppStore } from '../store/appStore';
+import { usePaperStore } from '../store/paperStore';
 import { useTranslation } from 'react-i18next';
 import { FlaskConical } from 'lucide-react';
 
@@ -18,12 +19,8 @@ import SearchBar from '../components/SearchBar';
 import EmptyState from '../components/EmptyState';
 
 const Explore: React.FC = () => {
-  const {
-    papers,
-    searchQuery, setSearchQuery,
-    activeFilter, setActiveFilter,
-    setView, setSelectedPaper,
-  } = useStore();
+  const { searchQuery, setSearchQuery, activeFilter, setActiveFilter, setView } = useAppStore();
+  const { papers, setSelectedPaper } = usePaperStore();
   const { t } = useTranslation();
 
   /** 根据搜索关键词和分类筛选计算过滤后的论文列表 */
