@@ -5,7 +5,7 @@
  * 所有子视图（包括 PaperDetail）共享同一布局壳
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ViewMode } from '../types';
 import { useAppStore } from '../store/appStore';
 
@@ -20,8 +20,16 @@ import Explore from './Explore';
 import Library from './Library';
 import Account from './Account';
 import PaperDetail from './PaperDetail';
+import { useUserStore } from '../store/userStore';
+import { useNavigate } from 'react-router-dom';
 const AppPage: React.FC = () => {
-  const currentView = useAppStore(state => state.currentView);
+  const {currentView} = useAppStore();
+  const {isAuthenticated} = useUserStore();
+  const navigate = useNavigate();
+
+  if (!isAuthenticated) {
+    navigate('/auth');
+  }
 
   /** 根据当前视图渲染对应页面 */
   const renderView = () => {

@@ -60,10 +60,13 @@ export interface UserResponse {
   code: number;
   message: string;
   data: {
-    id: string;
-    username: string;
-    email: string;
-    avatar?: string;
+    token: string;
+    user: {
+      id: string;
+      username: string;
+      email: string;
+      avatar?: string;
+    };
   };
 }
 

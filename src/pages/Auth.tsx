@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useAppStore } from '../store/appStore';
 import { useUserStore } from '../store/userStore';
 import { ViewMode } from '../types';
-import * as api from '../utils/api';
+import * as api from '../service/user';
 import toast, { Toaster } from 'react-hot-toast';
 import {
   FlaskConical,
@@ -19,6 +19,7 @@ import {
   Send,
   X,
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 type AuthMode = 'login' | 'register' | 'forgot';
 
@@ -74,7 +75,8 @@ const InputField = ({
 
 const Auth: React.FC = () => {
   const { t, i18n } = useTranslation();
-  const setView = useAppStore(state => state.setView);
+  const navigate = useNavigate();
+  const {currentView,setView} = useAppStore();
   const authLogin = useUserStore(state => state.login);
 
   const [mode, setMode] = useState<AuthMode>('login');
@@ -157,6 +159,7 @@ const Auth: React.FC = () => {
       const res = await api.login(loginForm);
       authLogin(res.data.user, res.data.token);
       setView(ViewMode.Home);
+      navigate('/app');
     } catch (err: any) {
       notifyError(err.response?.data?.error || err.message || t('authLoginFailed'));
     } finally {
@@ -208,6 +211,7 @@ const Auth: React.FC = () => {
       const res = await api.register({ email, username, password, code });
       authLogin(res.data.user, res.data.token);
       setView(ViewMode.Home);
+      navigate('/app');
     } catch (err: any) {
       notifyError(err.response?.data?.error || err.message || t('authRegisterFailed'));
     } finally {
@@ -238,7 +242,7 @@ const Auth: React.FC = () => {
         newPassword: newPwd,
       });
       authLogin(res.data.user, res.data.token);
-      setView(ViewMode.Home);
+      navigate('/app');
     } catch (err: any) {
       notifyError(err.response?.data?.error || err.message || t('authResetFailed'));
     } finally {
@@ -253,7 +257,7 @@ const Auth: React.FC = () => {
         {/* Top bar */}
         <div className="flex items-center justify-between px-6 py-5 lg:px-10">
           <button
-            onClick={() => setView(ViewMode.Landing)}
+            onClick={() => navigate('/landing')}
             className="flex items-center gap-2 text-sm font-bold text-text-secondary hover:text-primary transition-colors"
           >
             <ArrowLeft size={18} />

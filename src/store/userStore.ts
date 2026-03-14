@@ -18,6 +18,7 @@ interface UserState {
   login: (user: User, token: string) => void;
   logout: () => void;
   setUser: (user: User) => void;
+  setToken: (token: string) => void;
   setSubscription: (sub: UserSubscription | null) => void;
 }
 
@@ -47,7 +48,10 @@ export const useUserStore = create<UserState>()(
         set((state) => {
           state.user = user;
         }),
-
+      setToken: (token) =>
+        set((state) => {
+          state.token = token;
+        }),
       setSubscription: (subscription) => 
         set((state) => {
           state.subscription = subscription;

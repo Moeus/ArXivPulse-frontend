@@ -27,8 +27,6 @@ export enum ViewMode {
     Library = 'library',
     Account = 'account',
     PaperDetail = 'paper_detail',
-    Landing = 'landing',
-    Auth = 'auth'
 }
 
 export interface TrendingTopic {
