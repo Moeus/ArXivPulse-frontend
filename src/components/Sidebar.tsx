@@ -10,7 +10,7 @@ import { ViewMode } from '../types';
 import { useAppStore } from '../store/appStore';
 import { useUserStore } from '../store/userStore';
 import { useTranslation } from 'react-i18next';
-import { House, Compass, Library, CircleUser, FlaskConical, Languages, LogOut } from 'lucide-react';
+import { Compass, Library, CircleUser, Coffee, Languages, LogOut } from 'lucide-react';
 
 const Sidebar: React.FC = () => {
   const { currentView, setView, setSearchQuery, setActiveFilter, resetUI } = useAppStore();
@@ -20,7 +20,6 @@ const Sidebar: React.FC = () => {
   const toggleLang = () => i18n.changeLanguage(i18n.language.startsWith('en') ? 'zh' : 'en');
 
   const navItems = [
-    { id: ViewMode.Home, label: t('navHome'), icon: House },
     { id: ViewMode.Explore, label: t('navExplore'), icon: Compass },
     { id: ViewMode.Library, label: t('navLibrary'), icon: Library },
     { id: ViewMode.Account, label: t('navAccount'), icon: CircleUser },
@@ -37,7 +36,6 @@ const Sidebar: React.FC = () => {
   const handleLogout = () => {
     resetUI();
     logout();
-    setView(ViewMode.Landing);
   };
 
   /** 获取用户名首字母作为头像 */
@@ -51,9 +49,9 @@ const Sidebar: React.FC = () => {
     <aside className="w-64 hidden lg:flex flex-shrink-0 border-r border-gray-100 flex-col justify-between p-4 h-full bg-white sticky top-0">
       <div className="flex flex-col gap-8">
         <div className="px-2 pt-2 flex items-center justify-between">
-          <div className="cursor-pointer" onClick={() => handleNavClick(ViewMode.Home)}>
+          <div className="cursor-pointer" onClick={() => handleNavClick(ViewMode.Explore)}>
             <h1 className="text-xl font-bold tracking-tight text-text-main flex items-center gap-2">
-              <FlaskConical className="text-primary" size={28} />
+              <Coffee className="text-primary" size={28} />
               {t('appName')}
             </h1>
           </div>

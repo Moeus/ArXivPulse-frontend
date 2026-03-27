@@ -6,7 +6,7 @@
 
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { FlaskConical, Languages } from 'lucide-react';
+import { Coffee, Languages } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const Landing: React.FC = () => {
@@ -18,7 +18,7 @@ const Landing: React.FC = () => {
     <div className="min-h-screen bg-white overflow-x-hidden">
       <nav className="max-w-7xl mx-auto px-6 py-8 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <FlaskConical className="text-primary" size={32} />
+          <Coffee className="text-primary" size={32} />
           <span className="text-2xl font-black text-text-main tracking-tighter">{t('appName')}</span>
         </div>
         <div className="flex items-center gap-4">

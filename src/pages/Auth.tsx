@@ -6,7 +6,7 @@ import { ViewMode } from '../types';
 import * as api from '../service/user';
 import toast, { Toaster } from 'react-hot-toast';
 import {
-  FlaskConical,
+  Coffee,
   Languages,
   Mail,
   Lock,
@@ -77,7 +77,7 @@ const Auth: React.FC = () => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const {currentView,setView} = useAppStore();
-  const authLogin = useUserStore(state => state.login);
+  const {login} = useUserStore();
 
   const [mode, setMode] = useState<AuthMode>('login');
   const [loading, setLoading] = useState(false);
@@ -157,11 +157,11 @@ const Auth: React.FC = () => {
     setLoading(true);
     try {
       const res = await api.login(loginForm);
-      authLogin(res.data.user, res.data.token);
+      login(res.data.user, res.data.token);
       setView(ViewMode.Home);
       navigate('/app');
     } catch (err: any) {
-      notifyError(err.response?.data?.error || err.message || t('authLoginFailed'));
+      notifyError(err.response?.data?.error || err.message || t('loginFailed'));
     } finally {
       setLoading(false);
     }
@@ -209,7 +209,7 @@ const Auth: React.FC = () => {
     setLoading(true);
     try {
       const res = await api.register({ email, username, password, code });
-      authLogin(res.data.user, res.data.token);
+      login(res.data.user, res.data.token);
       setView(ViewMode.Home);
       navigate('/app');
     } catch (err: any) {
@@ -241,7 +241,7 @@ const Auth: React.FC = () => {
         code,
         newPassword: newPwd,
       });
-      authLogin(res.data.user, res.data.token);
+      login(res.data.user, res.data.token);
       navigate('/app');
     } catch (err: any) {
       notifyError(err.response?.data?.error || err.message || t('authResetFailed'));
@@ -270,7 +270,7 @@ const Auth: React.FC = () => {
             </button>
             {/* Mobile logo */}
             <div className="lg:hidden flex items-center gap-2">
-              <FlaskConical className="text-primary" size={24} />
+              <Coffee className="text-primary" size={24} />
               <span className="text-lg font-black text-text-main tracking-tighter">{t('appName')}</span>
             </div>
           </div>
@@ -284,8 +284,8 @@ const Auth: React.FC = () => {
             {mode === 'login' && (
               <div>
                 <div className="mb-8">
-                  <h1 className="text-3xl font-black text-text-main tracking-tight">{t('authLoginTitle')}</h1>
-                  <p className="text-text-secondary text-sm mt-2">{t('authLoginSubtitle')}</p>
+                  <h1 className="text-3xl font-black text-text-main tracking-tight">{t('loginTitle')}</h1>
+                  <p className="text-text-secondary text-sm mt-2">{t('loginSubtitle')}</p>
                 </div>
 
                 <form onSubmit={handleLogin} className="flex flex-col gap-4">
@@ -321,7 +321,7 @@ const Auth: React.FC = () => {
                     className="w-full py-4 bg-gradient-to-r from-primary to-purple-600 text-white rounded-2xl font-black text-sm uppercase tracking-widest shadow-xl shadow-primary/25 hover:shadow-2xl hover:shadow-primary/35 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 mt-2"
                   >
                     {loading && <Loader size={16} className="animate-spin" />}
-                    {t('authLoginBtn')}
+                    {t('loginBtn')}
                   </button>
                 </form>
 

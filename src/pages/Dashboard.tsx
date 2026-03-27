@@ -36,10 +36,10 @@ const Dashboard: React.FC = () => {
 
       {/* 统计卡片网格 */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <StatCard label='Days of Service' value='1,248' trend='+1' icon={<Calendar size={20} />} color='text-blue-600 bg-blue-50' />
-          <StatCard label='Papers Sent' value='84.2k' trend='+12%' icon={<Send size={20} />} color='text-purple-600 bg-purple-50' />
-          <StatCard label='Crawled Index' value='2.4M' trend='+5.4k' icon={<Globe size={20} />} color='text-emerald-600 bg-emerald-50' />
-          <StatCard label='AI Summaries' value='12.8k' trend='+8%' icon={<Sparkles size={20} />} color='text-amber-600 bg-amber-50' />
+          <StatCard label={t('daysOfService')} value='1,248' trend='+1' icon={<Calendar size={20} />} color='text-blue-600 bg-blue-50' />
+          <StatCard label={t('papersSent')} value='84.2k' trend='+12%' icon={<Send size={20} />} color='text-purple-600 bg-purple-50' />
+          <StatCard label={t('crawledIndex')} value='2.4M' trend='+5.4k' icon={<Globe size={20} />} color='text-emerald-600 bg-emerald-50' />
+          <StatCard label={t('aiSummaries')} value='12.8k' trend='+8%' icon={<Sparkles size={20} />} color='text-amber-600 bg-amber-50' />
 
       </div>
 

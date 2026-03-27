@@ -27,7 +27,7 @@ export const useUserStore = create<UserState>()(
     immer((set) => ({
       user: null,
       token: null,
-      isAuthenticated: false,
+      isAuthenticated: true,
       subscription: null,
 
       login: (user, token) => 
@@ -60,6 +60,9 @@ export const useUserStore = create<UserState>()(
     {
       name: 'user-storage',
       // We will perist user, token, isAuthenticated, and subscription
+      partialize: (state) => ({
+        token: state.token,
+      }),
     }
   )
 );

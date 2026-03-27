@@ -9,7 +9,7 @@ import { Paper, ViewMode } from '../types';
 import { useAppStore } from '../store/appStore';
 import { usePaperStore } from '../store/paperStore';
 import { useTranslation } from 'react-i18next';
-import { FlaskConical } from 'lucide-react';
+import { Coffee } from 'lucide-react';
 
 // 可复用组件
 import PaperCard from '../components/PaperCard';
@@ -98,7 +98,7 @@ const Explore: React.FC = () => {
           ) : (
             <div className="col-span-full">
               <EmptyState
-                icon={FlaskConical}
+                icon={Coffee}
                 message={t('noResearchMatch')}
                 actionLabel={t('reset')}
                 onAction={handleReset}

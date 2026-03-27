@@ -7,10 +7,10 @@ import AppPage from './pages/AppPage';
 
 // 这是一个简单的路由守卫组件
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const isAuthenticated = useUserStore(state => state.isAuthenticated);
+  const {isAuthenticated,token} = useUserStore();
   
   // 如果未认证，直接重定向到落地页（或登录页）
-  if (!isAuthenticated) {
+  if (!isAuthenticated && !token) {
     return <Navigate to="/landing" replace />;
   }
 

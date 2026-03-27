@@ -5,7 +5,7 @@
  * 所有子视图（包括 PaperDetail）共享同一布局壳
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect,useCallback } from 'react';
 import { ViewMode } from '../types';
 import { useAppStore } from '../store/appStore';
 
@@ -15,27 +15,54 @@ import MobileHeader from '../components/MobileHeader';
 import MobileNav from '../components/MobileNav';
 
 // 子视图页面
-import Dashboard from './Dashboard';
 import Explore from './Explore';
 import Library from './Library';
 import Account from './Account';
 import PaperDetail from './PaperDetail';
 import { useUserStore } from '../store/userStore';
 import { useNavigate } from 'react-router-dom';
+import {getCurrentUser  } from '@/service/user';
 const AppPage: React.FC = () => {
   const {currentView} = useAppStore();
-  const {isAuthenticated} = useUserStore();
+  const {isAuthenticated,token,login} = useUserStore();
   const navigate = useNavigate();
+  // 重构无感登录逻辑，增加错误处理和严谨的判断
+  const initAuth = useCallback(async () => {
 
-  if (!isAuthenticated) {
-    navigate('/auth');
-  }
+    if (isAuthenticated) return;
+
+    if (!token) {
+      navigate('/auth', { replace: true }); // 使用 replace 避免历史记录问题
+      return;
+    }
+
+    try {
+
+      const res = await getCurrentUser();
+      console.log(res)
+      if (res && res.data && res.data.user && res.data.token) {
+        login(res.data.user, res.data.token); // 登录成功，更新状态
+      } else {
+        navigate('/auth', { replace: true });
+      }
+    } catch (error) {
+     
+      console.error('无感登录失败:', error);
+      navigate('/auth', { replace: true });
+    }
+  }, [isAuthenticated, token, login, , navigate]);
+
+  useEffect(() => {
+    // 执行认证初始化
+    initAuth();
+
+    // 组件卸载时清理副作用（防止导航到已卸载的组件）
+    return () => {};
+  }, [initAuth]); 
 
   /** 根据当前视图渲染对应页面 */
   const renderView = () => {
     switch (currentView) {
-      case ViewMode.Home:
-        return <Dashboard />;
       case ViewMode.Explore:
         return <Explore />;
       case ViewMode.Library:
@@ -45,7 +72,7 @@ const AppPage: React.FC = () => {
       case ViewMode.PaperDetail:
         return <PaperDetail />;
       default:
-        return <Dashboard />;
+        return <Explore />;
     }
   };
 

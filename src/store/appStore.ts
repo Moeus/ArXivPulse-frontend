@@ -24,8 +24,8 @@ interface AppState {
 export const useAppStore = create<AppState>()(
   persist(
     immer((set) => ({
-      currentView: ViewMode.Landing,
-      previousView: ViewMode.Explore,
+      currentView: ViewMode.Explore,
+      previousView: ViewMode.Home,
       searchQuery: '',
       activeFilter: 'All',
 
@@ -47,17 +47,15 @@ export const useAppStore = create<AppState>()(
           state.activeFilter = activeFilter;
         }),
 
-      /** 重置 UI 状态（配合 logout 使用） */
       resetUI: () => 
         set((state) => {
-          state.currentView = ViewMode.Landing;
+          state.currentView = ViewMode.Explore;
           state.searchQuery = '';
           state.activeFilter = 'All';
         }),
     })),
     {
       name: 'app-storage',
-      // Optionally only persist view/filters
       partialize: (state) => ({ 
         currentView: state.currentView,
         previousView: state.previousView,

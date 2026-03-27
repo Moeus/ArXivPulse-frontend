@@ -7,7 +7,7 @@
 
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { FlaskConical, Languages } from 'lucide-react';
+import { Coffee, Languages } from 'lucide-react';
 
 const MobileHeader: React.FC = () => {
   const { t, i18n } = useTranslation();
@@ -17,7 +17,7 @@ const MobileHeader: React.FC = () => {
   return (
     <div className="lg:hidden flex items-center justify-between px-5 py-3 border-b border-gray-100 bg-white/90 backdrop-blur-xl flex-shrink-0 z-40">
       <h1 className="text-lg font-bold tracking-tight text-text-main flex items-center gap-2">
-        <FlaskConical className="text-primary" size={24} />
+        <Coffee className="text-primary" size={24} />
         {t('appName')}
       </h1>
       <button
