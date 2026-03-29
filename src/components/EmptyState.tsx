@@ -1,12 +1,6 @@
 /**
- * EmptyState — 通用空状态提示组件
- * 用于 Library 页面无收藏、Explore 页面无搜索结果等场景
- *
- * Props:
- *   icon        — Material Symbols 图标名称
- *   message     — 提示文案
- *   actionLabel — 可选的按钮文字
- *   onAction    — 可选的按钮点击回调
+ * EmptyState — 通用空状态提示
+ * 設計：書卷氣 — 柔和的边框、温暖的色调
  */
 
 import React from 'react';
@@ -20,13 +14,15 @@ interface EmptyStateProps {
 }
 
 const EmptyState: React.FC<EmptyStateProps> = ({ icon: Icon, message, actionLabel, onAction }) => (
-  <div className="py-20 text-center flex flex-col items-center gap-4 bg-gray-50 rounded-3xl border-2 border-dashed border-gray-200">
-    <Icon className="text-gray-300" size={64} />
-    <p className="text-text-secondary font-bold">{message}</p>
+  <div className="py-20 text-center flex flex-col items-center gap-5 bg-background-warm/50 rounded-2xl border border-dashed border-border-subtle">
+    <div className="w-20 h-20 rounded-2xl bg-primary/5 flex items-center justify-center">
+      <Icon className="text-primary/30" size={40} />
+    </div>
+    <p className="text-text-secondary font-medium text-sm">{message}</p>
     {actionLabel && onAction && (
       <button
         onClick={onAction}
-        className="text-primary font-black text-xs uppercase tracking-widest border-b-2 border-primary/20"
+        className="text-primary font-semibold text-xs uppercase tracking-wider hover:underline underline-offset-4 transition-all"
       >
         {actionLabel}
       </button>

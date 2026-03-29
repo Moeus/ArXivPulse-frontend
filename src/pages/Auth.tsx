@@ -1,3 +1,8 @@
+/**
+ * Auth — 登录/注册/忘记密码页面
+ * 设计风格：書卷氣與咖啡香 — 温暖的纸质感 + 简约表单
+ */
+
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppStore } from '../store/appStore';
@@ -45,24 +50,24 @@ const InputField = ({
   suffix?: React.ReactNode;
 }) => (
   <div className="relative group">
-    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary group-focus-within:text-primary transition-colors">
-      <Icon size={18} />
+    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted group-focus-within:text-primary transition-colors duration-200">
+      <Icon size={17} />
     </div>
     <input
       type={showToggle ? (showPwd ? 'text' : 'password') : type}
       value={value}
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
-      className="w-full pl-11 pr-4 py-3.5 bg-background-subtle border border-gray-200 rounded-2xl text-sm text-text-main placeholder:text-text-secondary/50 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all"
+      className="w-full pl-11 pr-4 py-3.5 bg-background-warm border border-border-light rounded-xl text-sm text-text-main placeholder:text-text-muted/60 focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/10 focus:bg-white transition-all duration-200"
       style={suffix ? { paddingRight: '7rem' } : showToggle ? { paddingRight: '3rem' } : {}}
     />
     {showToggle && (
       <button
         type="button"
         onClick={onToggle}
-        className="absolute right-4 top-1/2 -translate-y-1/2 text-text-secondary hover:text-primary transition-colors"
+        className="absolute right-4 top-1/2 -translate-y-1/2 text-text-muted hover:text-primary transition-colors"
       >
-        {showPwd ? <EyeOff size={18} /> : <Eye size={18} />}
+        {showPwd ? <EyeOff size={17} /> : <Eye size={17} />}
       </button>
     )}
     {suffix && (
@@ -102,27 +107,27 @@ const Auth: React.FC = () => {
     toast((t) => (
       <div className="flex justify-between items-center gap-3 min-w-[200px]">
         <div className="flex items-center gap-2 flex-1">
-          <span className="text-lg">{type === 'success' ? '✨' : '💡'}</span>
-          <span className="text-sm font-bold text-text-main">{message}</span>
+          <span className="text-lg">{type === 'success' ? '☕' : '💡'}</span>
+          <span className="text-sm font-medium text-text-main">{message}</span>
         </div>
         <button
           type="button"
           onClick={() => toast.dismiss(t.id)}
-          className="p-1 rounded-lg hover:bg-gray-100 text-text-secondary transition-colors"
+          className="p-1 rounded-lg hover:bg-background-subtle text-text-muted transition-colors"
         >
-          <X size={16} />
+          <X size={14} />
         </button>
       </div>
     ), {
       position: 'top-center',
       duration: 3000,
       style: {
-        borderRadius: '1rem',
-        background: '#fff',
-        color: '#1a1a1a',
+        borderRadius: '0.75rem',
+        background: '#F7F6F3',
+        color: '#2D2A26',
         padding: '12px 16px',
-        boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)',
-        border: '1px solid #f3f4f6',
+        boxShadow: '0 8px 30px -4px rgba(45, 42, 38, 0.12)',
+        border: '1px solid #E8E4DC',
       }
     });
   };
@@ -251,27 +256,54 @@ const Auth: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex bg-white">
+    <div className="min-h-screen flex bg-background-light">
       <Toaster />
+
+      {/* Left decorative panel — Desktop only */}
+      <div className="hidden lg:flex w-[420px] flex-shrink-0 bg-background-dark relative overflow-hidden flex-col justify-between p-10">
+        {/* Decorative elements */}
+        <div className="absolute -top-20 -right-20 w-72 h-72 rounded-full bg-primary/8 blur-3xl" />
+        <div className="absolute bottom-20 -left-16 w-48 h-48 rounded-full bg-cambridge/6 blur-2xl" />
+        
+        <div className="relative z-10">
+          <div className="flex items-center gap-2.5 mb-16">
+            <Coffee className="text-primary" size={24} />
+            <span className="text-lg italic font-serif font-semibold text-white/90">{t('appName')}</span>
+          </div>
+          <h2 className="font-serif text-3xl font-semibold text-white/90 leading-snug mb-4">
+            {t('landingTitle')}
+            <span className="text-primary italic"> {t('landingTitleHighlight')}</span>
+          </h2>
+          <p className="text-white/40 text-sm leading-relaxed">
+            {t('landingDescription')}
+          </p>
+        </div>
+
+        <div className="relative z-10 text-white/20 text-xs font-serif">
+          © 2025 Daily Cup Paper
+        </div>
+      </div>
+
+      {/* Right form panel */}
       <div className="flex-1 flex flex-col min-h-screen">
         {/* Top bar */}
         <div className="flex items-center justify-between px-6 py-5 lg:px-10">
           <button
             onClick={() => navigate('/landing')}
-            className="flex items-center gap-2 text-sm font-bold text-text-secondary hover:text-primary transition-colors"
+            className="flex items-center gap-2 text-sm font-medium text-text-secondary hover:text-primary transition-colors"
           >
-            <ArrowLeft size={18} />
+            <ArrowLeft size={16} />
             {t('back')}
           </button>
           <div className="flex items-center gap-3">
-            <button onClick={toggleLang} className="flex items-center gap-1.5 text-sm font-bold text-text-secondary hover:text-primary transition-colors px-3 py-1.5 rounded-lg hover:bg-primary/5">
-              <Languages size={18} />
+            <button onClick={toggleLang} className="flex items-center gap-1.5 text-xs font-medium text-text-secondary hover:text-primary transition-colors px-3 py-1.5 rounded-lg hover:bg-primary/5">
+              <Languages size={15} />
               {t('switchLang')}
             </button>
             {/* Mobile logo */}
             <div className="lg:hidden flex items-center gap-2">
-              <Coffee className="text-primary" size={24} />
-              <span className="text-lg font-black text-text-main tracking-tighter">{t('appName')}</span>
+              <Coffee className="text-primary" size={20} />
+              <span className="text-base italic font-serif font-semibold text-text-main">{t('appName')}</span>
             </div>
           </div>
         </div>
@@ -284,7 +316,7 @@ const Auth: React.FC = () => {
             {mode === 'login' && (
               <div>
                 <div className="mb-8">
-                  <h1 className="text-3xl font-black text-text-main tracking-tight">{t('loginTitle')}</h1>
+                  <h1 className="text-3xl font-serif font-semibold text-text-main tracking-tight">{t('loginTitle')}</h1>
                   <p className="text-text-secondary text-sm mt-2">{t('loginSubtitle')}</p>
                 </div>
 
@@ -309,7 +341,7 @@ const Auth: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => switchMode('forgot')}
-                      className="text-xs font-bold text-primary hover:text-primary/80 transition-colors"
+                      className="text-xs font-medium text-primary hover:text-primary-dark transition-colors"
                     >
                       {t('authForgotPassword')}
                     </button>
@@ -318,7 +350,7 @@ const Auth: React.FC = () => {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full py-4 bg-gradient-to-r from-primary to-purple-600 text-white rounded-2xl font-black text-sm uppercase tracking-widest shadow-xl shadow-primary/25 hover:shadow-2xl hover:shadow-primary/35 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 mt-2"
+                    className="w-full py-4 bg-primary text-white rounded-xl font-semibold text-sm tracking-wide shadow-warm-lg shadow-primary/20 hover:shadow-warm-xl hover:shadow-primary/25 hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center gap-2 mt-2"
                   >
                     {loading && <Loader size={16} className="animate-spin" />}
                     {t('loginBtn')}
@@ -330,7 +362,7 @@ const Auth: React.FC = () => {
                     {t('authNoAccount')}{' '}
                     <button
                       onClick={() => switchMode('register')}
-                      className="text-primary font-bold hover:underline"
+                      className="text-primary font-semibold hover:underline underline-offset-2"
                     >
                       {t('authGoRegister')}
                     </button>
@@ -343,7 +375,7 @@ const Auth: React.FC = () => {
             {mode === 'register' && (
               <div>
                 <div className="mb-8">
-                  <h1 className="text-3xl font-black text-text-main tracking-tight">{t('authRegisterTitle')}</h1>
+                  <h1 className="text-3xl font-serif font-semibold text-text-main tracking-tight">{t('authRegisterTitle')}</h1>
                   <p className="text-text-secondary text-sm mt-2">{t('authRegisterSubtitle')}</p>
                 </div>
 
@@ -371,7 +403,7 @@ const Auth: React.FC = () => {
                         type="button"
                         onClick={() => handleSendCode('register')}
                         disabled={codeSending || codeCooldown > 0}
-                        className="px-3 py-1.5 bg-primary/10 hover:bg-primary/20 text-primary text-xs font-bold rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+                        className="px-3 py-1.5 bg-primary/8 hover:bg-primary/15 text-primary text-xs font-semibold rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
                       >
                         {codeSending ? <Loader size={12} className="animate-spin" /> : <Send size={12} />}
                         {codeCooldown > 0 ? `${codeCooldown}s` : t('authSendCode')}
@@ -400,7 +432,7 @@ const Auth: React.FC = () => {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full py-4 bg-gradient-to-r from-primary to-purple-600 text-white rounded-2xl font-black text-sm uppercase tracking-widest shadow-xl shadow-primary/25 hover:shadow-2xl hover:shadow-primary/35 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 mt-2"
+                    className="w-full py-4 bg-primary text-white rounded-xl font-semibold text-sm tracking-wide shadow-warm-lg shadow-primary/20 hover:shadow-warm-xl hover:shadow-primary/25 hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center gap-2 mt-2"
                   >
                     {loading && <Loader size={16} className="animate-spin" />}
                     {t('authRegisterBtn')}
@@ -412,7 +444,7 @@ const Auth: React.FC = () => {
                     {t('authHasAccount')}{' '}
                     <button
                       onClick={() => switchMode('login')}
-                      className="text-primary font-bold hover:underline"
+                      className="text-primary font-semibold hover:underline underline-offset-2"
                     >
                       {t('authGoLogin')}
                     </button>
@@ -425,7 +457,7 @@ const Auth: React.FC = () => {
             {mode === 'forgot' && (
               <div>
                 <div className="mb-8">
-                  <h1 className="text-3xl font-black text-text-main tracking-tight">{t('authForgotTitle')}</h1>
+                  <h1 className="text-3xl font-serif font-semibold text-text-main tracking-tight">{t('authForgotTitle')}</h1>
                   <p className="text-text-secondary text-sm mt-2">{t('authForgotSubtitle')}</p>
                 </div>
 
@@ -447,7 +479,7 @@ const Auth: React.FC = () => {
                         type="button"
                         onClick={() => handleSendCode('reset')}
                         disabled={forgotCodeSending || forgotCooldown > 0}
-                        className="px-3 py-1.5 bg-primary/10 hover:bg-primary/20 text-primary text-xs font-bold rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+                        className="px-3 py-1.5 bg-primary/8 hover:bg-primary/15 text-primary text-xs font-semibold rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
                       >
                         {forgotCodeSending ? <Loader size={12} className="animate-spin" /> : <Send size={12} />}
                         {forgotCooldown > 0 ? `${forgotCooldown}s` : t('authSendCode')}
@@ -476,7 +508,7 @@ const Auth: React.FC = () => {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full py-4 bg-gradient-to-r from-primary to-purple-600 text-white rounded-2xl font-black text-sm uppercase tracking-widest shadow-xl shadow-primary/25 hover:shadow-2xl hover:shadow-primary/35 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 mt-2"
+                    className="w-full py-4 bg-primary text-white rounded-xl font-semibold text-sm tracking-wide shadow-warm-lg shadow-primary/20 hover:shadow-warm-xl hover:shadow-primary/25 hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center gap-2 mt-2"
                   >
                     {loading && <Loader size={16} className="animate-spin" />}
                     {t('authResetBtn')}
@@ -486,7 +518,7 @@ const Auth: React.FC = () => {
                 <div className="mt-8 text-center">
                   <button
                     onClick={() => switchMode('login')}
-                    className="text-primary font-bold text-sm hover:underline flex items-center justify-center gap-1"
+                    className="text-primary font-semibold text-sm hover:underline underline-offset-2 flex items-center justify-center gap-1"
                   >
                     <ArrowLeft size={14} />
                     {t('authBackToLogin')}

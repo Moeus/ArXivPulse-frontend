@@ -1,8 +1,6 @@
 /**
- * Sidebar — 桌面端侧边栏导航组件
- * 仅在大屏幕（lg 及以上）显示
- * 包含：应用 Logo、主导航菜单、用户头像
- * 切换导航时自动重置搜索和筛选状态
+ * Sidebar — 桌面端侧边栏导航
+ * 設計：書卷氣 — 纸白背景 + 温暖的边框 + 精致的导航项
  */
 
 import React from 'react';
@@ -46,17 +44,17 @@ const Sidebar: React.FC = () => {
   };
 
   return (
-    <aside className="w-64 hidden lg:flex flex-shrink-0 border-r border-gray-100 flex-col justify-between p-4 h-full bg-white sticky top-0">
+    <aside className="w-60 hidden lg:flex flex-shrink-0 border-r border-border-light flex-col justify-between p-5 h-full bg-white/70 backdrop-blur-sm sticky top-0">
       <div className="flex flex-col gap-8">
-        <div className="px-2 pt-2 flex items-center justify-between">
-          <div className="cursor-pointer" onClick={() => handleNavClick(ViewMode.Explore)}>
-            <h1 className="text-xl font-bold tracking-tight text-text-main flex items-center gap-2">
-              <Coffee className="text-primary" size={28} />
+        <div className="px-1 pt-1 flex items-center justify-between">
+          <div className="cursor-pointer flex items-center gap-2.5" onClick={() => handleNavClick(ViewMode.Explore)}>
+            <Coffee className="text-primary" size={22} />
+            <h1 className="text-base italic font-serif font-semibold tracking-tight text-text-main">
               {t('appName')}
             </h1>
           </div>
-          <button onClick={toggleLang} className="flex items-center gap-1 text-xs font-bold text-text-secondary hover:text-primary transition-colors px-2 py-1 rounded-lg hover:bg-primary/5" title="Switch Language">
-            <Languages size={16} />
+          <button onClick={toggleLang} className="flex items-center gap-1 text-[10px] font-medium text-text-muted hover:text-primary transition-colors px-2 py-1 rounded-lg hover:bg-primary/5" title="Switch Language">
+            <Languages size={13} />
             {t('switchLang')}
           </button>
         </div>
@@ -69,13 +67,13 @@ const Sidebar: React.FC = () => {
               <button
                 key={item.id}
                 onClick={() => handleNavClick(item.id)}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors group ${
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group ${
                   isActive 
-                    ? 'bg-primary/10 text-primary' 
-                    : 'text-text-secondary hover:bg-background-subtle hover:text-primary'
+                    ? 'bg-primary/8 text-primary border border-primary/10' 
+                    : 'text-text-secondary hover:bg-background-warm hover:text-primary border border-transparent'
                 }`}
               >
-                <Icon size={24} className={isActive ? 'fill-current' : ''} />
+                <Icon size={20} className={isActive ? '' : 'opacity-60 group-hover:opacity-100'} />
                 <span className="text-sm font-medium">{item.label}</span>
               </button>
             );
@@ -84,23 +82,23 @@ const Sidebar: React.FC = () => {
 
       </div>
 
-      <div className="border-t border-gray-100 pt-4 px-2">
+      <div className="border-t border-border-light pt-4 px-1">
         <div className="flex items-center justify-between">
-          <div onClick={() => handleNavClick(ViewMode.Account)} className="flex items-center gap-3 cursor-pointer hover:opacity-80 flex-1 min-w-0">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary-light flex items-center justify-center text-white text-sm font-black shrink-0">
+          <div onClick={() => handleNavClick(ViewMode.Account)} className="flex items-center gap-3 cursor-pointer hover:opacity-80 flex-1 min-w-0 transition-opacity">
+            <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center text-primary text-sm font-serif font-semibold shrink-0">
               {getInitial()}
             </div>
             <div className="flex flex-col overflow-hidden">
               <span className="text-sm font-medium text-text-main truncate">{user?.username || t('user')}</span>
-              <span className="text-[10px] text-text-secondary truncate">{user?.email}</span>
+              <span className="text-[10px] text-text-muted truncate">{user?.email}</span>
             </div>
           </div>
           <button
             onClick={handleLogout}
-            className="shrink-0 p-1.5 text-text-secondary hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+            className="shrink-0 p-1.5 text-text-muted hover:text-red-500 hover:bg-red-50/80 rounded-lg transition-all"
             title={t('logout')}
           >
-            <LogOut size={16} />
+            <LogOut size={15} />
           </button>
         </div>
       </div>

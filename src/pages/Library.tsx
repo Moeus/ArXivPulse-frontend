@@ -1,7 +1,6 @@
 /**
  * Library — 收藏论文页面
- * 展示用户已收藏（bookmark）的论文列表
- * 无收藏时显示 EmptyState 空状态
+ * 設計：書卷氣 — "我的书架"
  */
 
 import React, { useMemo } from 'react';
@@ -18,15 +17,15 @@ const Library: React.FC = () => {
   const papers = usePaperStore(state => state.papers);
   const { t } = useTranslation();
 
-  /** 从全部论文中过滤出已收藏的 */
+  /** 过滤已收藏论文 */
   const bookmarkedPapers = useMemo(() => papers.filter(p => p.isBookmarked), [papers]);
 
   return (
     <div className="flex flex-col gap-6 animate-fade-in">
       {/* 页面标题 */}
       <div className="flex flex-col gap-1">
-        <h1 className="text-3xl font-black text-text-main tracking-tight">{t('savedResearch')}</h1>
-        <p className="text-text-secondary">{t('savedResearchDesc')}</p>
+        <h1 className="text-2xl font-serif font-semibold text-text-main tracking-tight">{t('savedResearch')}</h1>
+        <p className="text-sm text-text-muted">{t('savedResearchDesc')}</p>
       </div>
 
       {/* 论文列表 / 空状态 */}

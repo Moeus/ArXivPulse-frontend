@@ -1,7 +1,6 @@
 /**
  * Explore — 论文探索页面
- * 功能：精选论文展示、分类筛选、关键词搜索、论文列表
- * 过滤逻辑现在在组件内部使用 useMemo 自管理，不再依赖外部 props
+ * 設計：書卷氣 — 柔和的排版、温暖的色调
  */
 
 import React, { useMemo } from 'react';
@@ -34,7 +33,7 @@ const Explore: React.FC = () => {
       );
     }
 
-    // 按关键词搜索（标题、摘要、作者）
+    // 按关键词搜索
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       result = result.filter(p =>
@@ -47,16 +46,16 @@ const Explore: React.FC = () => {
     return result;
   }, [papers, searchQuery, activeFilter]);
 
-  /** 精选论文：列表中的第一篇 */
+  /** 精选论文 */
   const featuredPaper = filteredPapers[0];
 
-  /** 点击论文卡片 → 进入 PaperDetail 页面 */
+  /** 点击论文卡片 */
   const handlePaperClick = (p: Paper) => {
     setSelectedPaper(p);
     setView(ViewMode.PaperDetail);
   };
 
-  /** 重置所有筛选 */
+  /** 重置筛选 */
   const handleReset = () => {
     setSearchQuery('');
     setActiveFilter('All');
@@ -64,7 +63,7 @@ const Explore: React.FC = () => {
 
   return (
     <div className="flex flex-col gap-8 animate-fade-in pb-12">
-      {/* 精选论文 Hero 卡片（无筛选时显示） */}
+      {/* 精选论文 Hero 卡片 */}
       {!searchQuery && featuredPaper && (
         <FeaturedPaper paper={featuredPaper} onRead={() => handlePaperClick(featuredPaper)} />
       )}
@@ -75,10 +74,10 @@ const Explore: React.FC = () => {
       {/* 论文列表区域 */}
       <section className="flex flex-col gap-6">
         {/* 标题 + 搜索栏 */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-100 pb-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border-light pb-4">
           <div>
-            <h3 className="text-xl font-black text-text-main">{t('discoveryFeed')}</h3>
-            <p className="text-xs text-text-secondary font-medium">
+            <h3 className="text-lg font-serif font-semibold text-text-main">{t('discoveryFeed')}</h3>
+            <p className="text-xs text-text-muted font-medium mt-0.5">
               {activeFilter === 'All'
                 ? t('browsingGlobal')
                 : t('browsingFiltered').replace('{filter}', activeFilter)}
@@ -88,7 +87,7 @@ const Explore: React.FC = () => {
         </div>
 
         {/* 论文卡片网格 */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {filteredPapers.length > 0 ? (
             filteredPapers.map((paper, idx) => (
               <div key={paper.id} className={`${idx === 0 && !searchQuery ? 'md:col-span-2' : ''}`}>

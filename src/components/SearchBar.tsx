@@ -1,11 +1,6 @@
 /**
- * SearchBar — 搜索输入框组件
- * 带搜索图标的圆角输入框，用于 Explore 页面论文搜索
- *
- * Props:
- *   value       — 当前搜索关键词
- *   onChange     — 关键词变化回调
- *   placeholder  — 输入框占位文字
+ * SearchBar — 搜索输入框
+ * 設計：紙質感 — 温暖背景 + 精致圆角
  */
 
 import React from 'react';
@@ -22,11 +17,11 @@ const SearchBar: React.FC<SearchBarProps> = ({ value, onChange, placeholder }) =
     <input
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className="w-full h-10 pl-10 pr-4 rounded-xl bg-background-subtle border-none text-sm focus:ring-1 focus:ring-primary placeholder-text-secondary"
+      className="w-full h-10 pl-10 pr-4 rounded-xl bg-background-warm border border-border-light text-sm focus:ring-1 focus:ring-primary/20 focus:border-primary/30 placeholder-text-muted transition-all duration-200"
       placeholder={placeholder}
       type="text"
     />
-    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary" size={18} />
+    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" size={16} />
   </div>
 );
 

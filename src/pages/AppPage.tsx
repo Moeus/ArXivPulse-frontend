@@ -83,7 +83,7 @@ const AppPage: React.FC = () => {
       <Sidebar />
 
       {/* 主内容区 */}
-      <main className="flex-1 flex flex-col h-full overflow-hidden relative bg-white">
+      <main className="flex-1 flex flex-col h-full overflow-hidden relative bg-transparent">
         {/* 移动端顶部标题栏 — 所有页面显示 */}
         <MobileHeader />
 

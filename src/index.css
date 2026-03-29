@@ -4,56 +4,93 @@
 
 /* Tailwind CSS v4 Theme Configuration */
 @theme {
-    /* Custom Colors */
-    --color-primary: #7f13ec;
-    --color-primary-light: #d1b3f9;
-    --color-background-light: #ffffff;
-    --color-background-subtle: #f7f6f8;
-    --color-background-dark: #191022;
-    --color-card-dark: #2a1e36;
-    --color-text-main: #141118;
-    --color-text-secondary: #756189;
+    /* ☕️ Core Color Palette - 書卷氣與咖啡香 */
+    --color-primary: #C48B54;       /* 浅焙焦糖 Accent */
+    --color-primary-dark: #A66E38;  /* 浅焙焦糖 (深) */
+    --color-primary-light: #D4A574; /* 浅焙焦糖 (浅) */
+    --color-background-light: #F7F6F3; /* 晨间纸白 */
+    --color-background-subtle: #EFECE5; /* 更深一点的纸色 */
+    --color-background-warm: #F3F0EA;   /* 温暖的过渡纸色 */
+    --color-background-dark: #2D2A26;   /* 意式浓缩黑 (Dark mode bg) */
+    --color-card-dark: #3A3632;
+    --color-text-main: #2D2A26;     /* 意式浓缩黑 */
+    --color-text-secondary: #5C6B7B; /* 剑桥灰蓝 */
+    --color-text-muted: #8A9AAD;    /* 更淡的灰蓝，用于更弱的信息 */
+    --color-paper: #F7F6F3;
+    --color-coffee: #2D2A26;
+    --color-caramel: #C48B54;
+    --color-cambridge: #5C6B7B;
+    --color-border-light: #E8E4DC;  /* 温暖的边框色 */
+    --color-border-subtle: #DDD8CF; /* 更深一点的边框 */
 
     /* Font Family */
-    --font-sans: "Inter", sans-serif;
+    --font-sans: "Inter", "Roboto", "Noto Sans SC", sans-serif;
+    --font-serif: "Playfair Display", "Noto Serif SC", serif;
 
     /* Custom Animations */
-    --animate-fade-in: fadeIn 0.4s ease-out forwards;
-    --animate-slide-up: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    --animate-fade-in: fadeIn 0.5s ease-out forwards;
+    --animate-slide-up: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    --animate-float: float 6s ease-in-out infinite;
+    --animate-drip: drip 1.8s ease-in-out infinite;
+    --animate-steam: steam 3s ease-in-out infinite;
+    --animate-pulse-soft: pulseSoft 3s ease-in-out infinite;
 }
 
+/* ─── Keyframe Animations ─── */
 @keyframes fadeIn {
-    0% {
-        opacity: 0;
-    }
-
-    100% {
-        opacity: 1;
-    }
+    0% { opacity: 0; }
+    100% { opacity: 1; }
 }
 
 @keyframes slideUp {
-    0% {
-        transform: translateY(100%);
-        opacity: 0;
-    }
-
-    100% {
-        transform: translateY(0);
-        opacity: 1;
-    }
+    0% { transform: translateY(24px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
 }
 
 @keyframes slideInRight {
-    0% {
-        transform: translateX(100%);
-        opacity: 0;
-    }
+    0% { transform: translateX(100%); opacity: 0; }
+    100% { transform: translateX(0); opacity: 1; }
+}
 
-    100% {
-        transform: translateX(0);
-        opacity: 1;
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-12px); }
+}
+
+/* 咖啡滴落动画 */
+@keyframes drip {
+    0% { transform: translateY(-8px); opacity: 0; }
+    30% { opacity: 1; }
+    60% { transform: translateY(16px); opacity: 1; }
+    80% { transform: translateY(20px); opacity: 0.3; }
+    100% { transform: translateY(24px); opacity: 0; }
+}
+
+/* 咖啡蒸汽动画 */
+@keyframes steam {
+    0%, 100% { 
+        transform: translateY(0) scaleX(1); 
+        opacity: 0.3; 
     }
+    50% { 
+        transform: translateY(-8px) scaleX(1.2); 
+        opacity: 0.6; 
+    }
+}
+
+@keyframes pulseSoft {
+    0%, 100% { opacity: 0.6; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.05); }
+}
+
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+@keyframes ripple {
+    0% { transform: scale(0.8); opacity: 0.6; }
+    100% { transform: scale(2.4); opacity: 0; }
 }
 
 
@@ -61,6 +98,19 @@
     body {
         font-family: 'Inter', sans-serif;
         -webkit-font-smoothing: antialiased;
+        background-color: #F7F6F3;
+        color: #2D2A26;
+    }
+
+    /* 给 headings 默认使用衬线体 */
+    h1, h2, h3, h4, h5, h6 {
+        font-family: 'Playfair Display', 'Noto Serif SC', serif;
+    }
+
+    /* 更优雅的文本选中效果 */
+    ::selection {
+        background-color: rgba(196, 139, 84, 0.2);
+        color: #2D2A26;
     }
 }
 
@@ -74,7 +124,7 @@
     }
 
     .custom-scrollbar::-webkit-scrollbar {
-        width: 6px;
+        width: 4px;
     }
 
     .custom-scrollbar::-webkit-scrollbar-track {
@@ -82,7 +132,57 @@
     }
 
     .custom-scrollbar::-webkit-scrollbar-thumb {
-        background: #e5e7eb;
+        background: #DDD8CF;
         border-radius: 10px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #C48B54;
+    }
+
+    /* Paper texture overlay utility */
+    .paper-texture {
+        background-image: 
+            radial-gradient(ellipse at 20% 50%, rgba(196, 139, 84, 0.03) 0%, transparent 50%),
+            radial-gradient(ellipse at 80% 20%, rgba(92, 107, 123, 0.02) 0%, transparent 50%),
+            radial-gradient(#2D2A26 0.3px, transparent 0.3px);
+        background-size: 100% 100%, 100% 100%, 12px 12px;
+    }
+
+    /* Glassmorphism card */
+    .glass-card {
+        background: rgba(247, 246, 243, 0.75);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(232, 228, 220, 0.6);
+    }
+
+    /* Warm shadow (replaces cold drop-shadow) */
+    .shadow-warm-sm {
+        box-shadow: 0 2px 8px -2px rgba(45, 42, 38, 0.06);
+    }
+
+    .shadow-warm {
+        box-shadow: 0 4px 20px -4px rgba(45, 42, 38, 0.08);
+    }
+
+    .shadow-warm-lg {
+        box-shadow: 0 8px 30px -4px rgba(45, 42, 38, 0.1);
+    }
+
+    .shadow-warm-xl {
+        box-shadow: 0 20px 50px -12px rgba(45, 42, 38, 0.15);
+    }
+
+    /* Shimmer loading effect */
+    .shimmer {
+        background: linear-gradient(
+            90deg,
+            rgba(196, 139, 84, 0.05) 25%,
+            rgba(196, 139, 84, 0.1) 50%,
+            rgba(196, 139, 84, 0.05) 75%
+        );
+        background-size: 200% 100%;
+        animation: shimmer 2s ease-in-out infinite;
     }
 }

@@ -1,8 +1,6 @@
 /**
  * PaperCard — 论文卡片组件
- * 展示论文的分类标签、标题、摘要、作者和发布日期
- * 支持收藏切换和 AI 摘要展开功能
- * 点击卡片跳转到 PaperDetail 页面
+ * 設計：精致的"咖啡品鉴卡"风格 — 轻微弥散阴影 + 细线描边
  */
 
 import React, { useState } from 'react';
@@ -10,7 +8,7 @@ import { Paper, ViewMode } from '../types';
 import { useAppStore } from '../store/appStore';
 import { usePaperStore } from '../store/paperStore';
 import { useTranslation } from 'react-i18next';
-import { Bookmark, BookmarkCheck, Sparkles } from 'lucide-react';
+import { Bookmark, BookmarkCheck, Sparkles, Clock } from 'lucide-react';
 
 interface PaperCardProps {
   paper: Paper;
@@ -37,14 +35,6 @@ const PaperCard: React.FC<PaperCardProps> = ({ paper }) => {
     setLoading(false);
   };
 
-  const getCategoryColor = (cat: string) => {
-    if (cat.startsWith('cs')) return 'bg-purple-100 text-primary';
-    if (cat.startsWith('physics')) return 'bg-blue-100 text-blue-700';
-    if (cat.startsWith('math')) return 'bg-orange-100 text-orange-700';
-    if (cat.startsWith('q-bio')) return 'bg-green-100 text-green-700';
-    return 'bg-gray-100 text-gray-700';
-  };
-
   const handleCardClick = () => {
     setSelectedPaper(paper);
     setView(ViewMode.PaperDetail);
@@ -53,14 +43,15 @@ const PaperCard: React.FC<PaperCardProps> = ({ paper }) => {
   return (
     <div 
       onClick={handleCardClick}
-      className="bg-white border border-gray-100 rounded-xl p-6 shadow-sm hover:shadow-md hover:border-primary/30 transition-all group cursor-pointer animate-slide-up"
+      className="bg-white/80 backdrop-blur-sm border border-border-light rounded-2xl p-6 shadow-warm-sm hover:shadow-warm hover:border-primary/20 transition-all duration-300 group cursor-pointer animate-slide-up"
     >
       <div className="flex justify-between items-start mb-3">
-        <div className="flex gap-2 mb-2 flex-wrap">
-          <span className={`px-2.5 py-1 rounded-md text-xs font-semibold ${getCategoryColor(paper.category)}`}>
+        <div className="flex gap-2 mb-1 flex-wrap items-center">
+          {/* 药丸形标签 — 剑桥灰蓝底色，像咖啡豆轮廓 */}
+          <span className="px-2.5 py-1 rounded-full bg-cambridge/10 text-cambridge text-[10px] font-semibold tracking-wider uppercase">
             {paper.category}
           </span>
-          <span className="px-2.5 py-1 rounded-md bg-gray-900 text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-yellow-400 to-amber-500 text-xs font-bold tracking-wide">
+          <span className="text-primary-dark text-xs font-serif italic tracking-wide opacity-70">
             {paper.journal}
           </span>
         </div>
@@ -69,13 +60,13 @@ const PaperCard: React.FC<PaperCardProps> = ({ paper }) => {
             e.stopPropagation();
             toggleBookmark(paper.id);
           }}
-          className={`transition-colors p-1 ${paper.isBookmarked ? 'text-primary' : 'text-text-secondary hover:text-primary'}`}
+          className={`transition-all duration-200 p-1.5 rounded-lg hover:bg-primary/5 ${paper.isBookmarked ? 'text-primary' : 'text-text-muted hover:text-primary'}`}
         >
-          {paper.isBookmarked ? <BookmarkCheck className="fill-current" size={24} /> : <Bookmark size={24} />}
+          {paper.isBookmarked ? <BookmarkCheck className="fill-current" size={20} /> : <Bookmark size={20} />}
         </button>
       </div>
 
-      <h3 className="text-xl font-bold text-text-main mb-2 leading-tight group-hover:text-primary transition-colors">
+      <h3 className="text-lg font-serif font-semibold text-text-main mb-3 leading-snug group-hover:text-primary transition-colors duration-200">
         {paper.title}
       </h3>
       
@@ -84,15 +75,20 @@ const PaperCard: React.FC<PaperCardProps> = ({ paper }) => {
       </p>
 
       {showSummary && (
-        <div className="mb-4 p-4 bg-primary/5 rounded-lg border border-primary/10 animate-fade-in">
+        <div className="mb-4 p-4 bg-primary/5 rounded-xl border border-primary/10 animate-fade-in">
           <div className="flex items-center gap-2 mb-2">
-            <Sparkles className="text-primary" size={18} />
-            <span className="text-xs font-bold text-primary uppercase tracking-wider">{t('geminiAiInsights')}</span>
+            <Sparkles className="text-primary" size={14} />
+            <span className="text-[10px] font-serif font-semibold text-primary uppercase tracking-wider">{t('geminiAiInsights')}</span>
           </div>
           {loading ? (
-            <div className="flex items-center gap-3 text-text-secondary text-sm italic py-2">
-              <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
-              {t('analyzingResearch')}
+            <div className="flex items-center gap-3 text-primary text-sm font-medium py-3">
+              {/* 咖啡滴漏加载动画 */}
+              <div className="flex gap-1">
+                <div className="w-1 h-1 rounded-full bg-primary animate-drip" />
+                <div className="w-1 h-1 rounded-full bg-primary animate-drip" style={{ animationDelay: '0.3s' }} />
+                <div className="w-1 h-1 rounded-full bg-primary animate-drip" style={{ animationDelay: '0.6s' }} />
+              </div>
+              <span className="font-serif italic text-xs">{t('analyzingResearch')}</span>
             </div>
           ) : (
             <p className="text-sm text-text-main leading-relaxed">
@@ -102,18 +98,18 @@ const PaperCard: React.FC<PaperCardProps> = ({ paper }) => {
         </div>
       )}
 
-      <div className="flex items-center justify-between border-t border-gray-100 pt-4 mt-auto">
+      <div className="flex items-center justify-between border-t border-border-light pt-4 mt-auto">
         <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-sm text-text-main">
-          <span className="font-medium whitespace-nowrap">{paper.authors.join(', ')}</span>
+          <span className="font-medium text-xs text-text-secondary">{paper.authors.join(', ')}</span>
           <button 
             onClick={handleAiInsights}
-            className="text-xs font-bold text-primary flex items-center gap-1 hover:underline"
+            className="text-[11px] font-semibold text-primary flex items-center gap-1 hover:underline underline-offset-2"
           >
-            <Sparkles size={14} />
+            <Sparkles size={12} />
             {showSummary ? t('hide') : t('explain')}
           </button>
         </div>
-        <span className="text-xs text-text-secondary font-mono bg-gray-50 px-2 py-1 rounded hidden sm:inline-block">
+        <span className="text-[10px] text-text-muted font-mono bg-background-warm px-2 py-1 rounded-lg hidden sm:inline-block">
           {paper.publishedDate}
         </span>
       </div>
