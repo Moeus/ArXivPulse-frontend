@@ -25,7 +25,7 @@ export const useAppStore = create<AppState>()(
   persist(
     immer((set) => ({
       currentView: ViewMode.Explore,
-      previousView: ViewMode.Home,
+      previousView: ViewMode.Explore,
       searchQuery: '',
       activeFilter: 'All',
 

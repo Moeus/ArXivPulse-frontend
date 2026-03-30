@@ -4,39 +4,50 @@
  */
 
 import React, { useState } from 'react';
-import { Frequency } from '../types';
 import { useAppStore } from '../store/appStore';
 import { useUserStore } from '../store/userStore';
 import { useTranslation } from 'react-i18next';
 import { Mail, LogOut, Clock, CheckCircle, X, ChevronDown, ChevronUp, Calendar, CalendarDays, Gavel, TriangleAlert, Info, BadgeCheck, Coffee, Loader, Pencil, ArrowLeft, Sparkles, User, BarChart3, TrendingUp } from 'lucide-react';
 import { ARXIV_CATEGORIES } from '../constants/ArxivCategory';
 import { ACTIVITY_CHART, CATEGORY_CHART } from '../constants';
-import StatCard from '../components/StatCard';
-import ActivityChart from '../components/ActivityChart';
-import CategoryChart from '../components/CategoryChart';
+import StatCard from '../components/static/StatCard';
+import ActivityChart from '../components/static/ActivityChart';
+import CategoryChart from '../components/static/CategoryChart';
+import * as api from '../service/api';
 
 const Account: React.FC = () => {
   const { resetUI } = useAppStore();
-  const { subscription, setSubscription, user, logout } = useUserStore();
+  const { user, setSubscription, logout } = useUserStore();
+  const subscription = user?.subscription || null;
   const { t } = useTranslation();
   const [isEditing, setIsEditing] = useState(false);
   const [confirmCancel, setConfirmCancel] = useState(false);
   const [showStats, setShowStats] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
-  const [selectedTopicIds, setSelectedTopicIds] = useState<string[]>(subscription?.domains || ['cs.AI', 'cs.CV']);
-  const [freq, setFreq] = useState<Frequency>(subscription?.frequency || 'daily');
+  const [selectedTopicIds, setSelectedTopicIds] = useState<string[]>(subscription?.categories || ['cs.AI', 'cs.CV']);
+  const [pushTime, setPushTime] = useState(subscription?.pushTime || '08:00');
   const [expandedGroups, setExpandedGroups] = useState<string[]>(['cs']);
   const [agreed, setAgreed] = useState(false);
 
-  const handleSave = () => {
+  const hasActiveSubscription = subscription && subscription.categories.length > 0;
+
+  const handleSave = async () => {
     if (!agreed || selectedTopicIds.length === 0) return;
-    setSubscription({
-      domains: selectedTopicIds,
-      frequency: freq,
-      timeSlot: 'morning',
-      subscribedAt: new Date().toLocaleDateString()
-    });
-    setIsEditing(false);
+    setIsSaving(true);
+    try {
+      const res = await api.updateSubscription({
+        categories: selectedTopicIds,
+        pushTime,
+        isActive: true,
+      });
+      setSubscription(res.data);
+      setIsEditing(false);
+    } catch (err: any) {
+      console.error('Save subscription failed:', err);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleCancel = () => {
@@ -62,7 +73,7 @@ const Account: React.FC = () => {
   // ─────────────────────────────────────────────
   // 状态 1：无订阅
   // ─────────────────────────────────────────────
-  if (!subscription && !isEditing) {
+  if (!hasActiveSubscription && !isEditing) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] text-center gap-6 animate-fade-in">
         <div className="w-24 h-24 rounded-2xl bg-primary/8 flex items-center justify-center">
@@ -91,7 +102,7 @@ const Account: React.FC = () => {
   // ─────────────────────────────────────────────
   // 状态 2：已订阅（非编辑）
   // ─────────────────────────────────────────────
-  if (subscription && !isEditing) {
+  if (hasActiveSubscription && !isEditing) {
     return (
       <div className="flex flex-col gap-5 animate-fade-in pb-20">
 
@@ -107,7 +118,7 @@ const Account: React.FC = () => {
               </div>
               <div className="flex flex-col gap-1">
                 <h1 className="text-lg font-serif font-semibold text-white/90 leading-tight">
-                  {user?.username || t('researcher')}
+                  {user?.email?.split('@')[0] || t('researcher')}
                 </h1>
                 <p className="text-sm text-white/40">{user?.email}</p>
                 <span className="mt-1 inline-flex items-center gap-1.5 px-2.5 py-1 bg-primary/15 text-primary text-[10px] font-semibold uppercase tracking-widest rounded-full border border-primary/20 w-fit">
@@ -127,20 +138,17 @@ const Account: React.FC = () => {
 
           <div className="relative mt-5 grid grid-cols-2 gap-3">
             <div className="bg-white/5 backdrop-blur-sm rounded-xl px-4 py-3 border border-white/8 flex items-center gap-3">
-              {subscription.frequency === 'daily'
-                ? <Calendar className="text-white/40 shrink-0" size={18} />
-                : <CalendarDays className="text-white/40 shrink-0" size={18} />
-              }
+              <Clock className="text-white/40 shrink-0" size={18} />
               <div>
-                <p className="text-[10px] text-white/30 font-medium uppercase tracking-widest">{t('frequency')}</p>
-                <p className="text-sm font-serif font-semibold text-white/80 capitalize">{subscription.frequency}</p>
+                <p className="text-[10px] text-white/30 font-medium uppercase tracking-widest">{t('pushTime') || 'Push Time'}</p>
+                <p className="text-sm font-serif font-semibold text-white/80">{subscription!.pushTime}</p>
               </div>
             </div>
             <div className="bg-white/5 backdrop-blur-sm rounded-xl px-4 py-3 border border-white/8 flex items-center gap-3">
-              <Clock className="text-white/40 shrink-0" size={18} />
+              <Calendar className="text-white/40 shrink-0" size={18} />
               <div>
-                <p className="text-[10px] text-white/30 font-medium uppercase tracking-widest">{t('since')}</p>
-                <p className="text-sm font-serif font-semibold text-white/80">{subscription.subscribedAt}</p>
+                <p className="text-[10px] text-white/30 font-medium uppercase tracking-widest">{t('status') || 'Status'}</p>
+                <p className="text-sm font-serif font-semibold text-white/80">{subscription!.isActive ? t('active') || 'Active' : t('inactive') || 'Inactive'}</p>
               </div>
             </div>
           </div>
@@ -224,11 +232,11 @@ const Account: React.FC = () => {
               <h2 className="text-sm font-serif font-semibold text-text-main">{t('activeDomains')}</h2>
             </div>
             <span className="text-[10px] font-semibold text-primary bg-primary/5 border border-primary/10 rounded-full px-2.5 py-1">
-              {subscription.domains.length}
+              {subscription!.categories.length}
             </span>
           </div>
           <div className="px-5 py-4 flex flex-wrap gap-2">
-            {subscription.domains.map(id => (
+            {subscription!.categories.map(id => (
               <span key={id} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-cambridge/8 hover:bg-cambridge/12 text-cambridge rounded-full text-xs font-medium border border-cambridge/10 transition-colors">
                 {getTopicName(id)}
               </span>
@@ -316,7 +324,7 @@ const Account: React.FC = () => {
       <div className="flex items-center gap-2 flex-wrap">
         {[
           { label: t('researchDomains'), done: selectedTopicIds.length > 0 },
-          { label: t('deliverySchedule'), done: true },
+          { label: t('pushTimeLabel') || 'Push Time', done: true },
           { label: t('academicIntegrity'), done: agreed },
         ].map((step, i) => (
           <div key={i} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-medium border transition-all ${
@@ -400,42 +408,31 @@ const Account: React.FC = () => {
         </div>
       </section>
 
-      {/* Step 2: Delivery Schedule */}
+      {/* Step 2: Push Time */}
       <section className="bg-white/80 backdrop-blur-sm border border-border-light rounded-2xl overflow-hidden shadow-warm-sm">
         <div className="p-5 border-b border-border-light flex items-center gap-3">
           <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-serif font-semibold text-xs">2</div>
           <div>
-            <h2 className="text-sm font-serif font-semibold text-text-main">{t('deliverySchedule')}</h2>
-            <p className="text-[11px] text-text-muted">{t('chooseFrequency')}</p>
+            <h2 className="text-sm font-serif font-semibold text-text-main">{t('pushTimeLabel') || 'Push Time'}</h2>
+            <p className="text-[11px] text-text-muted">{t('choosePushTime') || 'Choose your preferred daily push time'}</p>
           </div>
         </div>
-        <div className="p-4 grid grid-cols-2 gap-3">
-          <button
-            onClick={() => setFreq('daily')}
-            className={`relative p-4 rounded-xl border-2 transition-all flex flex-col items-center gap-2 ${
-              freq === 'daily'
-                ? 'border-primary bg-primary/5 shadow-warm-sm'
-                : 'border-border-light hover:border-primary/20 bg-background-warm/40'
-            }`}
-          >
-            {freq === 'daily' && <div className="absolute top-2 right-2"><CheckCircle className="text-primary" size={13} /></div>}
-            <Calendar size={22} className={freq === 'daily' ? 'text-primary' : 'text-text-muted'} />
-            <span className={`text-sm font-serif font-semibold ${freq === 'daily' ? 'text-primary' : 'text-text-main'}`}>{t('daily')}</span>
-            <span className="text-[10px] text-text-muted text-center">{t('everyMorning8')}</span>
-          </button>
-          <button
-            onClick={() => setFreq('weekly')}
-            className={`relative p-4 rounded-xl border-2 transition-all flex flex-col items-center gap-2 ${
-              freq === 'weekly'
-                ? 'border-primary bg-primary/5 shadow-warm-sm'
-                : 'border-border-light hover:border-primary/20 bg-background-warm/40'
-            }`}
-          >
-            {freq === 'weekly' && <div className="absolute top-2 right-2"><CheckCircle className="text-primary" size={13} /></div>}
-            <CalendarDays size={22} className={freq === 'weekly' ? 'text-primary' : 'text-text-muted'} />
-            <span className={`text-sm font-serif font-semibold ${freq === 'weekly' ? 'text-primary' : 'text-text-main'}`}>{t('weekly')}</span>
-            <span className="text-[10px] text-text-muted text-center">{t('everyMondayMorning')}</span>
-          </button>
+        <div className="p-4 grid grid-cols-3 gap-3">
+          {['07:00', '08:00', '09:00', '12:00', '18:00', '20:00'].map(time => (
+            <button
+              key={time}
+              onClick={() => setPushTime(time)}
+              className={`relative p-3 rounded-xl border-2 transition-all flex flex-col items-center gap-1.5 ${
+                pushTime === time
+                  ? 'border-primary bg-primary/5 shadow-warm-sm'
+                  : 'border-border-light hover:border-primary/20 bg-background-warm/40'
+              }`}
+            >
+              {pushTime === time && <div className="absolute top-1.5 right-1.5"><CheckCircle className="text-primary" size={12} /></div>}
+              <Clock size={18} className={pushTime === time ? 'text-primary' : 'text-text-muted'} />
+              <span className={`text-sm font-serif font-semibold ${pushTime === time ? 'text-primary' : 'text-text-main'}`}>{time}</span>
+            </button>
+          ))}
         </div>
       </section>
 
@@ -489,10 +486,10 @@ const Account: React.FC = () => {
         )}
         <button
           onClick={handleSave}
-          disabled={!agreed || selectedTopicIds.length === 0}
+          disabled={!agreed || selectedTopicIds.length === 0 || isSaving}
           className="shrink-0 flex items-center gap-2 px-6 py-2.5 bg-primary text-white rounded-xl font-semibold text-xs tracking-wide shadow-warm-lg shadow-primary/20 hover:shadow-warm-xl hover:shadow-primary/25 disabled:opacity-30 disabled:shadow-none disabled:cursor-not-allowed transition-all hover:scale-[1.01] active:scale-[0.99]"
         >
-          <Coffee size={14} />
+          {isSaving ? <Loader size={14} className="animate-spin" /> : <Coffee size={14} />}
           {t('saveSubscription')}
         </button>
       </div>

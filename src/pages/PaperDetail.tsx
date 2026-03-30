@@ -9,12 +9,17 @@ import { GoogleGenAI } from '@google/genai';
 import { useAppStore } from '../store/appStore';
 import { usePaperStore } from '../store/paperStore';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, ExternalLink, Bookmark, BookmarkCheck, FileText, Sparkles, Coffee, X, ChevronDown, ArrowUp } from 'lucide-react';
+import { ArrowLeft, ExternalLink, Bookmark, BookmarkCheck, FileText, Sparkles, Coffee, X, ChevronDown, ArrowUp, Loader } from 'lucide-react';
 
 const PaperDetail: React.FC = () => {
   const { setView, previousView } = useAppStore();
   const { selectedPaper: paper, toggleBookmark } = usePaperStore();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  
+  // 根据当前语言选择展示的摘要
+  const abstract = paper?.abstractText
+    ? (i18n.language.startsWith('zh') ? paper.abstractText.ch : paper.abstractText.en)
+    : '';
   
   const [showAI, setShowAI] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -57,7 +62,7 @@ const PaperDetail: React.FC = () => {
         model: 'gemini-2.0-flash-exp',
         config: {
           systemInstruction: `You are an expert scientific assistant discussing the paper titled "${paper.title}". 
-          Abstract: ${paper.abstract}. Be concise, accurate, and helpful.`,
+          Abstract: ${abstract}. Be concise, accurate, and helpful.`,
         }
       });
 
@@ -87,7 +92,7 @@ const PaperDetail: React.FC = () => {
         {/* Action Bar */}
         <div className="flex items-center gap-2">
             <a 
-              href={`https://arxiv.org/abs/${paper.id}`} 
+              href={paper.link || `https://arxiv.org/abs/${paper.id}`} 
               target="_blank" 
               rel="noopener noreferrer"
               className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl bg-background-warm border border-border-light text-text-secondary hover:border-primary/20 hover:text-primary transition-all text-xs font-medium"
@@ -148,14 +153,14 @@ const PaperDetail: React.FC = () => {
               {t('abstract')}
             </h2>
             <p className="text-base md:text-lg text-text-main leading-relaxed font-sans opacity-90 text-justify">
-              {paper.abstract}
+              {abstract}
             </p>
           </section>
 
           {/* Mobile: View on ArXiv */}
           <div className="sm:hidden pt-4">
               <a 
-              href={`https://arxiv.org/abs/${paper.id}`} 
+              href={paper.link || `https://arxiv.org/abs/${paper.id}`} 
               target="_blank" 
               rel="noopener noreferrer"
               className="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-xl bg-background-warm border border-border-light text-text-main font-medium hover:border-primary/20 transition-colors"

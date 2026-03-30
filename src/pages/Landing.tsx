@@ -26,6 +26,7 @@ const SteamLines = () => (
 );
 
 /** Daily Brew 预览卡片 */
+// todo 替换吗marquee
 const BrewCard = ({ title, category, readTime, delay }: { title: string; category: string; readTime: string; delay: number }) => (
   <div
     className="min-w-[280px] md:min-w-[320px] p-6 rounded-2xl border border-border-light bg-white/80 backdrop-blur-sm shadow-warm-sm hover:shadow-warm hover:border-primary/30 transition-all duration-300 cursor-default group flex-shrink-0"

@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { useAppStore } from '../store/appStore';
 import { useUserStore } from '../store/userStore';
 import { ViewMode } from '../types';
-import * as api from '../service/user';
+import * as api from '../service/api';
 import toast, { Toaster } from 'react-hot-toast';
 import {
   Coffee,
@@ -88,8 +88,8 @@ const Auth: React.FC = () => {
   const [loading, setLoading] = useState(false);
 
   // Grouped form states
-  const [loginForm, setLoginForm] = useState({ account: '', password: '' });
-  const [regForm, setRegForm] = useState({ email: '', username: '', password: '', confirmPwd: '', code: '' });
+  const [loginForm, setLoginForm] = useState({ email: '', password: '' });
+  const [regForm, setRegForm] = useState({ username: '',email: '', password: '', confirmPwd: '', captcha: '' });
   const [forgotForm, setForgotForm] = useState({ email: '', code: '', newPwd: '', confirmPwd: '' });
 
   // Toggle states
@@ -155,18 +155,18 @@ const Auth: React.FC = () => {
   };
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!loginForm.account || !loginForm.password) {
+    if (!loginForm.email || !loginForm.password) {
       notifyError(t('authFillAllFields'));
       return;
     }
     setLoading(true);
     try {
-      const res = await api.login(loginForm);
+      const res = await api.login({ email: loginForm.email, password: loginForm.password });
       login(res.data.user, res.data.token);
-      setView(ViewMode.Home);
+      setView(ViewMode.Explore);
       navigate('/app');
     } catch (err: any) {
-      notifyError(err.response?.data?.error || err.message || t('loginFailed'));
+      notifyError(err.message || t('loginFailed'));
     } finally {
       setLoading(false);
     }
@@ -186,11 +186,13 @@ const Auth: React.FC = () => {
 
     setSending(true);
     try {
-      await api.sendVerificationCode({ email, type });
+      // 后端接受 'register' 或 'reset_password'
+      const apiType = type === 'reset' ? 'reset_password' : 'register';
+      await api.sendCaptcha({ email, type: apiType });
       notifySuccess(t('authCodeSent'));
       startCooldown(setCooldown);
     } catch (err: any) {
-      notifyError(err.response?.data?.error || err.message || t('authCodeFailed'));
+      notifyError(err.message || t('authCodeFailed'));
     } finally {
       setSending(false);
     }
@@ -198,8 +200,8 @@ const Auth: React.FC = () => {
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    const { email, username, password, confirmPwd, code } = regForm;
-    if (!email || !username || !password || !confirmPwd || !code) {
+    const {username, email, password, confirmPwd, captcha } = regForm;
+    if (!username||!email || !password || !confirmPwd || !captcha) {
       notifyError(t('authFillAllFields'));
       return;
     }
@@ -213,12 +215,16 @@ const Auth: React.FC = () => {
     }
     setLoading(true);
     try {
-      const res = await api.register({ email, username, password, code });
-      login(res.data.user, res.data.token);
-      setView(ViewMode.Home);
+      const data = await api.register({ username,email, password, captcha });
+      if(data.code==200 && data.message){
+        notify(data.message,"success")
+      }
+      const loginData =await api.login({email, password})
+      login(loginData.data.user, loginData.data.token);
+      setView(ViewMode.Explore);
       navigate('/app');
     } catch (err: any) {
-      notifyError(err.response?.data?.error || err.message || t('authRegisterFailed'));
+      notifyError(err.message);
     } finally {
       setLoading(false);
     }
@@ -241,15 +247,15 @@ const Auth: React.FC = () => {
     }
     setLoading(true);
     try {
-      const res = await api.resetPassword({
+      await api.resetPassword({
         email,
-        code,
         newPassword: newPwd,
+        captcha: code,
       });
-      login(res.data.user, res.data.token);
-      navigate('/app');
+      notifySuccess(t('authResetSuccess') || '密码重置成功，请登录');
+      switchMode('login');
     } catch (err: any) {
-      notifyError(err.response?.data?.error || err.message || t('authResetFailed'));
+      notifyError(err.message || t('authResetFailed'));
     } finally {
       setLoading(false);
     }
@@ -322,10 +328,11 @@ const Auth: React.FC = () => {
 
                 <form onSubmit={handleLogin} className="flex flex-col gap-4">
                   <InputField
-                    icon={User}
-                    value={loginForm.account}
-                    onChange={(v) => setLoginForm(p => ({ ...p, account: v }))}
-                    placeholder={t('authAccountPlaceholder')}
+                    icon={Mail}
+                    type="email"
+                    value={loginForm.email}
+                    onChange={(v) => setLoginForm(p => ({ ...p, email: v }))}
+                    placeholder={t('authEmailPlaceholder')}
                   />
                   <InputField
                     icon={Lock}
@@ -381,6 +388,13 @@ const Auth: React.FC = () => {
 
                 <form onSubmit={handleRegister} className="flex flex-col gap-4">
                   <InputField
+                    icon={User}
+                    type="text"
+                    value={regForm.username}
+                    onChange={(v) => setRegForm(p => ({ ...p, username: v }))}
+                    placeholder={t('authUsernamePlaceholder')}
+                  />
+                  <InputField
                     icon={Mail}
                     type="email"
                     value={regForm.email}
@@ -388,15 +402,9 @@ const Auth: React.FC = () => {
                     placeholder={t('authEmailPlaceholder')}
                   />
                   <InputField
-                    icon={User}
-                    value={regForm.username}
-                    onChange={(v) => setRegForm(p => ({ ...p, username: v }))}
-                    placeholder={t('authUsernamePlaceholder')}
-                  />
-                  <InputField
                     icon={KeyRound}
-                    value={regForm.code}
-                    onChange={(v) => setRegForm(p => ({ ...p, code: v }))}
+                    value={regForm.captcha}
+                    onChange={(v) => setRegForm(p => ({ ...p, captcha: v }))}
                     placeholder={t('authCodePlaceholder')}
                     suffix={
                       <button

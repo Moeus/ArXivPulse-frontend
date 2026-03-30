@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { DailyData } from '../types';
+import { DailyData } from '../../types';
 
 interface CategoryChartProps {
   data: DailyData[];

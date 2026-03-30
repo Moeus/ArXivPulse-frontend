@@ -17,10 +17,15 @@ interface PaperCardProps {
 const PaperCard: React.FC<PaperCardProps> = ({ paper }) => {
   const setView = useAppStore(state => state.setView);
   const { toggleBookmark, setSelectedPaper } = usePaperStore();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [showSummary, setShowSummary] = useState(false);
   const [aiSummary, setAiSummary] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  // 根据当前语言选择摘要
+  const abstract = paper.abstractText
+    ? (i18n.language.startsWith('zh') ? paper.abstractText.ch : paper.abstractText.en)
+    : '';
 
   const handleAiInsights = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -47,7 +52,6 @@ const PaperCard: React.FC<PaperCardProps> = ({ paper }) => {
     >
       <div className="flex justify-between items-start mb-3">
         <div className="flex gap-2 mb-1 flex-wrap items-center">
-          {/* 药丸形标签 — 剑桥灰蓝底色，像咖啡豆轮廓 */}
           <span className="px-2.5 py-1 rounded-full bg-cambridge/10 text-cambridge text-[10px] font-semibold tracking-wider uppercase">
             {paper.category}
           </span>
@@ -71,7 +75,7 @@ const PaperCard: React.FC<PaperCardProps> = ({ paper }) => {
       </h3>
       
       <p className="text-text-secondary text-sm leading-relaxed mb-4 line-clamp-3">
-        {paper.abstract}
+        {abstract}
       </p>
 
       {showSummary && (
@@ -82,7 +86,6 @@ const PaperCard: React.FC<PaperCardProps> = ({ paper }) => {
           </div>
           {loading ? (
             <div className="flex items-center gap-3 text-primary text-sm font-medium py-3">
-              {/* 咖啡滴漏加载动画 */}
               <div className="flex gap-1">
                 <div className="w-1 h-1 rounded-full bg-primary animate-drip" />
                 <div className="w-1 h-1 rounded-full bg-primary animate-drip" style={{ animationDelay: '0.3s' }} />

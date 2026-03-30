@@ -1,14 +1,15 @@
 /**
  * Explore — 论文探索页面
  * 設計：書卷氣 — 柔和的排版、温暖的色调
+ * 数据来源：后端 API（推荐 / 搜索）
  */
 
-import React, { useMemo } from 'react';
+import React, { useEffect, useCallback, useRef } from 'react';
 import { Paper, ViewMode } from '../types';
 import { useAppStore } from '../store/appStore';
 import { usePaperStore } from '../store/paperStore';
 import { useTranslation } from 'react-i18next';
-import { Coffee } from 'lucide-react';
+import { Coffee, Loader } from 'lucide-react';
 
 // 可复用组件
 import PaperCard from '../components/PaperCard';
@@ -19,32 +20,44 @@ import EmptyState from '../components/EmptyState';
 
 const Explore: React.FC = () => {
   const { searchQuery, setSearchQuery, activeFilter, setActiveFilter, setView } = useAppStore();
-  const { papers, setSelectedPaper } = usePaperStore();
+  const { papers, isLoading, fetchRecommendations, fetchSearch, setSelectedPaper, fetchFavorites } = usePaperStore();
   const { t } = useTranslation();
+  const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const initialLoadDone = useRef(false);
 
-  /** 根据搜索关键词和分类筛选计算过滤后的论文列表 */
-  const filteredPapers = useMemo(() => {
-    let result = papers;
-
-    // 按分类筛选
-    if (activeFilter !== 'All') {
-      result = result.filter(p =>
-        p.category.toLowerCase().includes(activeFilter.toLowerCase())
-      );
+  // 初始加载：获取收藏 + 推荐
+  useEffect(() => {
+    if (!initialLoadDone.current) {
+      initialLoadDone.current = true;
+      fetchFavorites();
+      if (!searchQuery) {
+        fetchRecommendations(1);
+      } else {
+        fetchSearch(searchQuery, 1);
+      }
     }
+  }, []);
 
-    // 按关键词搜索
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase();
-      result = result.filter(p =>
-        p.title.toLowerCase().includes(q) ||
-        p.abstract.toLowerCase().includes(q) ||
-        p.authors.some(a => a.toLowerCase().includes(q))
-      );
-    }
+  // 搜索防抖
+  useEffect(() => {
+    if (!initialLoadDone.current) return;
+    if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
+    searchTimeoutRef.current = setTimeout(() => {
+      if (searchQuery.trim()) {
+        fetchSearch(searchQuery.trim(), 1);
+      } else {
+        fetchRecommendations(1);
+      }
+    }, 500);
+    return () => {
+      if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
+    };
+  }, [searchQuery]);
 
-    return result;
-  }, [papers, searchQuery, activeFilter]);
+  /** 过滤：分类筛选仍在前端做（API 不支持按 category 过滤，category 字段用于展示） */
+  const filteredPapers = activeFilter !== 'All'
+    ? papers.filter(p => p.category.toLowerCase().includes(activeFilter.toLowerCase()))
+    : papers;
 
   /** 精选论文 */
   const featuredPaper = filteredPapers[0];
@@ -86,25 +99,35 @@ const Explore: React.FC = () => {
           <SearchBar value={searchQuery} onChange={setSearchQuery} placeholder={t('filterPlaceholder')} />
         </div>
 
+        {/* 加载中 */}
+        {isLoading && (
+          <div className="flex items-center justify-center py-16 gap-3 text-text-muted">
+            <Loader size={20} className="animate-spin text-primary" />
+            <span className="text-sm font-medium">{t('loading') || '加载中...'}</span>
+          </div>
+        )}
+
         {/* 论文卡片网格 */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          {filteredPapers.length > 0 ? (
-            filteredPapers.map((paper, idx) => (
-              <div key={paper.id} className={`${idx === 0 && !searchQuery ? 'md:col-span-2' : ''}`}>
-                <PaperCard paper={paper} />
+        {!isLoading && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {filteredPapers.length > 0 ? (
+              filteredPapers.map((paper, idx) => (
+                <div key={paper.id} className={`${idx === 0 && !searchQuery ? 'md:col-span-2' : ''}`}>
+                  <PaperCard paper={paper} />
+                </div>
+              ))
+            ) : (
+              <div className="col-span-full">
+                <EmptyState
+                  icon={Coffee}
+                  message={t('noResearchMatch')}
+                  actionLabel={t('reset')}
+                  onAction={handleReset}
+                />
               </div>
-            ))
-          ) : (
-            <div className="col-span-full">
-              <EmptyState
-                icon={Coffee}
-                message={t('noResearchMatch')}
-                actionLabel={t('reset')}
-                onAction={handleReset}
-              />
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        )}
       </section>
     </div>
   );

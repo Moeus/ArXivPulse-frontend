@@ -1,24 +1,27 @@
 /**
  * Library — 收藏论文页面
  * 設計：書卷氣 — "我的书架"
+ * 数据来源：后端 Favorites API
  */
 
-import React, { useMemo } from 'react';
+import React, { useEffect } from 'react';
 import { ViewMode } from '../types';
 import { useAppStore } from '../store/appStore';
 import { usePaperStore } from '../store/paperStore';
 import { useTranslation } from 'react-i18next';
 import PaperCard from '../components/PaperCard';
 import EmptyState from '../components/EmptyState';
-import { Bookmark } from 'lucide-react';
+import { Bookmark, Loader } from 'lucide-react';
 
 const Library: React.FC = () => {
   const setView = useAppStore(state => state.setView);
-  const papers = usePaperStore(state => state.papers);
+  const { favoritePapers, isLoading, fetchFavorites } = usePaperStore();
   const { t } = useTranslation();
 
-  /** 过滤已收藏论文 */
-  const bookmarkedPapers = useMemo(() => papers.filter(p => p.isBookmarked), [papers]);
+  // 进入页面时刷新收藏列表
+  useEffect(() => {
+    fetchFavorites();
+  }, []);
 
   return (
     <div className="flex flex-col gap-6 animate-fade-in">
@@ -28,19 +31,29 @@ const Library: React.FC = () => {
         <p className="text-sm text-text-muted">{t('savedResearchDesc')}</p>
       </div>
 
+      {/* 加载中 */}
+      {isLoading && (
+        <div className="flex items-center justify-center py-16 gap-3 text-text-muted">
+          <Loader size={20} className="animate-spin text-primary" />
+          <span className="text-sm font-medium">{t('loading') || '加载中...'}</span>
+        </div>
+      )}
+
       {/* 论文列表 / 空状态 */}
-      <div className="grid grid-cols-1 gap-4">
-        {bookmarkedPapers.length > 0 ? (
-          bookmarkedPapers.map(paper => <PaperCard key={paper.id} paper={paper} />)
-        ) : (
-          <EmptyState
-            icon={Bookmark}
-            message={t('libraryEmpty')}
-            actionLabel={t('goDiscover')}
-            onAction={() => setView(ViewMode.Explore)}
-          />
-        )}
-      </div>
+      {!isLoading && (
+        <div className="grid grid-cols-1 gap-4">
+          {favoritePapers.length > 0 ? (
+            favoritePapers.map(paper => <PaperCard key={paper.id} paper={paper} />)
+          ) : (
+            <EmptyState
+              icon={Bookmark}
+              message={t('libraryEmpty')}
+              actionLabel={t('goDiscover')}
+              onAction={() => setView(ViewMode.Explore)}
+            />
+          )}
+        </div>
+      )}
     </div>
   );
 };

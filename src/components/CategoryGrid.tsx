@@ -1,6 +1,5 @@
 /**
  * CategoryGrid — 分类网格筛选组件
- * 設計：像咖啡豆药丸形标签 + 温暖色调
  */
 
 import React from 'react';

@@ -16,7 +16,12 @@ interface FeaturedPaperProps {
 
 const FeaturedPaper: React.FC<FeaturedPaperProps> = ({ paper, onRead }) => {
   const toggleBookmark = usePaperStore(state => state.toggleBookmark);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+
+  // 根据当前语言选择摘要
+  const abstract = paper.abstractText
+    ? (i18n.language.startsWith('zh') ? paper.abstractText.ch : paper.abstractText.en)
+    : '';
 
   return (
     <section className="relative overflow-hidden rounded-2xl bg-background-dark text-white p-8 md:p-10 shadow-warm-xl">
@@ -40,7 +45,7 @@ const FeaturedPaper: React.FC<FeaturedPaperProps> = ({ paper, onRead }) => {
         </h2>
 
         <p className="text-white/50 line-clamp-2 text-sm leading-relaxed font-sans">
-          {paper.abstract}
+          {abstract}
         </p>
 
         <div className="flex items-center gap-2 text-white/40 text-xs">

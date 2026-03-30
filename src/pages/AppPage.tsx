@@ -21,7 +21,7 @@ import Account from './Account';
 import PaperDetail from './PaperDetail';
 import { useUserStore } from '../store/userStore';
 import { useNavigate } from 'react-router-dom';
-import {getCurrentUser  } from '@/service/user';
+import {getCurrentUser  } from '@/service/api';
 const AppPage: React.FC = () => {
   const {currentView} = useAppStore();
   const {isAuthenticated,token,login} = useUserStore();
@@ -32,21 +32,18 @@ const AppPage: React.FC = () => {
     if (isAuthenticated) return;
 
     if (!token) {
-      navigate('/auth', { replace: true }); // 使用 replace 避免历史记录问题
+      navigate('/auth', { replace: true });
       return;
     }
 
     try {
-
       const res = await getCurrentUser();
-      console.log(res)
-      if (res && res.data && res.data.user && res.data.token) {
-        login(res.data.user, res.data.token); // 登录成功，更新状态
+      if (res && res.data && res.data.id) {
+        login(res.data, token); // res.data 直接就是 User 对象
       } else {
         navigate('/auth', { replace: true });
       }
     } catch (error) {
-     
       console.error('无感登录失败:', error);
       navigate('/auth', { replace: true });
     }
