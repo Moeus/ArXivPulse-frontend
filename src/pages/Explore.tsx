@@ -4,8 +4,8 @@
  * 数据来源：后端 API（推荐 / 搜索）
  */
 
-import React, { useEffect, useCallback, useRef } from 'react';
-import { Paper, ViewMode } from '../types';
+import React, { useEffect, useRef } from 'react';
+import { ViewMode } from '../types';
 import { useAppStore } from '../store/appStore';
 import { usePaperStore } from '../store/paperStore';
 import { useTranslation } from 'react-i18next';
@@ -20,7 +20,7 @@ import EmptyState from '../components/EmptyState';
 
 const Explore: React.FC = () => {
   const { searchQuery, setSearchQuery, activeFilter, setActiveFilter, setView } = useAppStore();
-  const { papers, isLoading, fetchRecommendations, fetchSearch, setSelectedPaper, fetchFavorites } = usePaperStore();
+  const { paperIds, paperMap, isLoading, fetchRecommendations, fetchSearch, setSelectedPaper, fetchFavorites } = usePaperStore();
   const { t } = useTranslation();
   const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const initialLoadDone = useRef(false);
@@ -54,19 +54,17 @@ const Explore: React.FC = () => {
     };
   }, [searchQuery]);
 
-  /** 过滤：分类筛选仍在前端做（API 不支持按 category 过滤，category 字段用于展示） */
-  const filteredPapers = activeFilter !== 'All'
-    ? papers.filter(p => p.category.toLowerCase().includes(activeFilter.toLowerCase()))
-    : papers;
+  /** 过滤：分类筛选在前端做（用 paperMap 按分类过滤 ID） */
+  const filteredPaperIds = activeFilter !== 'All'
+    ? paperIds.filter((id) => {
+        const p = paperMap[id];
+        return p && p.category.toLowerCase() === activeFilter.toLowerCase();
+      })
+    : paperIds;
 
-  /** 精选论文 */
-  const featuredPaper = filteredPapers[0];
-
-  /** 点击论文卡片 */
-  const handlePaperClick = (p: Paper) => {
-    setSelectedPaper(p);
-    setView(ViewMode.PaperDetail);
-  };
+  /** 精选论文（取第一个 ID 对应的 paper 对象） */
+  const featuredPaperId = filteredPaperIds[0];
+  const featuredPaper = featuredPaperId ? paperMap[featuredPaperId] : null;
 
   /** 重置筛选 */
   const handleReset = () => {
@@ -78,7 +76,13 @@ const Explore: React.FC = () => {
     <div className="flex flex-col gap-8 animate-fade-in pb-12">
       {/* 精选论文 Hero 卡片 */}
       {!searchQuery && featuredPaper && (
-        <FeaturedPaper paper={featuredPaper} onRead={() => handlePaperClick(featuredPaper)} />
+        <FeaturedPaper
+          paper={featuredPaper}
+          onRead={() => {
+            setSelectedPaper(featuredPaper);
+            setView(ViewMode.PaperDetail);
+          }}
+        />
       )}
 
       {/* 分类网格筛选器 */}
@@ -110,10 +114,10 @@ const Explore: React.FC = () => {
         {/* 论文卡片网格 */}
         {!isLoading && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            {filteredPapers.length > 0 ? (
-              filteredPapers.map((paper, idx) => (
-                <div key={paper.id} className={`${idx === 0 && !searchQuery ? 'md:col-span-2' : ''}`}>
-                  <PaperCard paper={paper} />
+            {filteredPaperIds.length > 0 ? (
+              filteredPaperIds.map((id, idx) => (
+                <div key={id} className={`${idx === 0 && !searchQuery ? 'md:col-span-2' : ''}`}>
+                  <PaperCard paperId={id} />
                 </div>
               ))
             ) : (

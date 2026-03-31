@@ -3,7 +3,7 @@
  * 設計：書卷氣 — 温暖的卡片风格
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAppStore } from '../store/appStore';
 import { useUserStore } from '../store/userStore';
 import { useTranslation } from 'react-i18next';
@@ -14,8 +14,9 @@ import StatCard from '../components/static/StatCard';
 import ActivityChart from '../components/static/ActivityChart';
 import CategoryChart from '../components/static/CategoryChart';
 import * as api from '../service/api';
-
+import { toast } from 'react-hot-toast';
 const Account: React.FC = () => {
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const { resetUI } = useAppStore();
   const { user, setSubscription, logout } = useUserStore();
   const subscription = user?.subscription || null;
@@ -31,8 +32,16 @@ const Account: React.FC = () => {
   const [agreed, setAgreed] = useState(false);
 
   const hasActiveSubscription = subscription && subscription.categories.length > 0;
+  // 渲染时刷新用户订阅状态
+  useEffect(() => {
+    const fetchUser = async () => {
+      const res = await api.getCurrentUser();
+      setSubscription(res.data.user.subscription);
+    }
+    fetchUser();
+  }, [isRefreshing]);
 
-  const handleSave = async () => {
+  const handleSubscribe = async () => {
     if (!agreed || selectedTopicIds.length === 0) return;
     setIsSaving(true);
     try {
@@ -41,17 +50,46 @@ const Account: React.FC = () => {
         pushTime,
         isActive: true,
       });
+      if (res.code === 200) {
+        toast.success(res.message || '订阅成功！');
+      } else {
+        toast.error(res.message || '订阅失败！');
+      }
       setSubscription(res.data);
       setIsEditing(false);
     } catch (err: any) {
-      console.error('Save subscription failed:', err);
+      console.error('Subscribe failed:', err);
     } finally {
       setIsSaving(false);
+      // 强制刷新页面状态，获取最新订阅信息
+      setIsRefreshing(prev => !prev);
     }
   };
-
-  const handleCancel = () => {
+  const handleUnsubscribe = async () => {
+    setIsSaving(true);
+    try {
+      const res = await api.updateSubscription({
+        categories: [],
+        pushTime,
+        isActive: false,
+      });
+      if (res.code === 200) {
+        toast.success(res.message || '退订成功！');
+      } else {
+        toast.error(res.message || '退订失败！');
+      }
+      setSubscription(res.data);
+      setIsEditing(false);
+    } catch (err: any) {
+      console.error('Unsubscribe failed:', err);
+    } finally {
+      setIsSaving(false);
+      setIsRefreshing(prev => !prev);
+    }
+  };
+  const handleEditingCancel = () => {
     setIsEditing(false);
+    setIsRefreshing(prev => !prev);
   };
 
   const handleLogout = () => {
@@ -118,7 +156,7 @@ const Account: React.FC = () => {
               </div>
               <div className="flex flex-col gap-1">
                 <h1 className="text-lg font-serif font-semibold text-white/90 leading-tight">
-                  {user?.email?.split('@')[0] || t('researcher')}
+                  {user?.username || t('researcher')}
                 </h1>
                 <p className="text-sm text-white/40">{user?.email}</p>
                 <span className="mt-1 inline-flex items-center gap-1.5 px-2.5 py-1 bg-primary/15 text-primary text-[10px] font-semibold uppercase tracking-widest rounded-full border border-primary/20 w-fit">
@@ -264,6 +302,7 @@ const Account: React.FC = () => {
                 className="w-full py-3 px-5 text-red-400 hover:text-red-500 hover:bg-red-50/60 rounded-xl text-xs font-medium tracking-wider transition-all flex items-center justify-center gap-2"
               >
                 <X size={12} />
+                {/* 取消订阅按钮 */}
                 {t('cancelSubscription')}
               </button>
             ) : (
@@ -271,7 +310,7 @@ const Account: React.FC = () => {
                 <p className="text-xs font-medium text-red-600 text-center">{t('cancelSubscriptionConfirm')}</p>
                 <div className="flex gap-2">
                   <button
-                    onClick={() => { setSubscription(null); setConfirmCancel(false); }}
+                    onClick={() => { handleUnsubscribe(); setConfirmCancel(false); }}
                     className="flex-1 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-xl text-xs font-semibold tracking-wider transition-all"
                   >
                     {t('confirmCancel')}
@@ -311,7 +350,7 @@ const Account: React.FC = () => {
         </div>
         {subscription && (
           <button
-            onClick={handleCancel}
+            onClick={handleEditingCancel}
             className="px-3 py-2 border border-border-light rounded-xl text-text-muted hover:bg-background-warm text-xs font-medium tracking-wider transition-all flex items-center gap-1.5"
           >
             <ArrowLeft size={12} />
@@ -418,7 +457,7 @@ const Account: React.FC = () => {
           </div>
         </div>
         <div className="p-4 grid grid-cols-3 gap-3">
-          {['07:00', '08:00', '09:00', '12:00', '18:00', '20:00'].map(time => (
+          {['08:00', '18:00'].map(time => (
             <button
               key={time}
               onClick={() => setPushTime(time)}
@@ -478,14 +517,14 @@ const Account: React.FC = () => {
       <div className="max-w-2xl mx-auto flex items-center gap-3">
         {subscription && (
           <button
-            onClick={handleCancel}
+            onClick={handleEditingCancel}
             className="shrink-0 px-4 py-2.5 border border-border-light text-text-muted hover:bg-background-warm rounded-xl text-xs font-medium tracking-wider transition-all"
           >
             {t('cancel')}
           </button>
         )}
         <button
-          onClick={handleSave}
+          onClick={handleSubscribe}
           disabled={!agreed || selectedTopicIds.length === 0 || isSaving}
           className="shrink-0 flex items-center gap-2 px-6 py-2.5 bg-primary text-white rounded-xl font-semibold text-xs tracking-wide shadow-warm-lg shadow-primary/20 hover:shadow-warm-xl hover:shadow-primary/25 disabled:opacity-30 disabled:shadow-none disabled:cursor-not-allowed transition-all hover:scale-[1.01] active:scale-[0.99]"
         >

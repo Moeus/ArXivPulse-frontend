@@ -54,6 +54,14 @@ export interface AuthData {
     subscription: UserSubscription;
   };
 }
+export interface UserInfo {
+  user: {
+    id: string;
+    username: string;
+    email: string;
+    subscription: UserSubscription;
+  };
+}
 
 // ─── Auth API ─────────────────────────────────────
 
@@ -108,11 +116,7 @@ export function resetPassword(params: {
 
 /** 获取当前用户信息 */
 export function getCurrentUser() {
-  return request<ApiResponse<{
-    id: string;
-    email: string;
-    subscription: UserSubscription;
-  }>>('/users/me', {
+  return request<ApiResponse<UserInfo>>('/users/me', {
     method: 'GET',
   });
 }

@@ -15,7 +15,7 @@ import { Bookmark, Loader } from 'lucide-react';
 
 const Library: React.FC = () => {
   const setView = useAppStore(state => state.setView);
-  const { favoritePapers, isLoading, fetchFavorites } = usePaperStore();
+  const { favoritePaperIds, isLoading, fetchFavorites } = usePaperStore();
   const { t } = useTranslation();
 
   // 进入页面时刷新收藏列表
@@ -42,8 +42,8 @@ const Library: React.FC = () => {
       {/* 论文列表 / 空状态 */}
       {!isLoading && (
         <div className="grid grid-cols-1 gap-4">
-          {favoritePapers.length > 0 ? (
-            favoritePapers.map(paper => <PaperCard key={paper.id} paper={paper} />)
+          {favoritePaperIds.length > 0 ? (
+            favoritePaperIds.map((id) => <PaperCard key={id} paperId={id} />)
           ) : (
             <EmptyState
               icon={Bookmark}

@@ -47,7 +47,7 @@ const AppPage: React.FC = () => {
       console.error('无感登录失败:', error);
       navigate('/auth', { replace: true });
     }
-  }, [isAuthenticated, token, login, , navigate]);
+  }, [isAuthenticated, token, login, navigate]);
 
   useEffect(() => {
     // 执行认证初始化

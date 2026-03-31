@@ -25,32 +25,6 @@ const SteamLines = () => (
   </div>
 );
 
-/** Daily Brew 预览卡片 */
-// todo 替换吗marquee
-const BrewCard = ({ title, category, readTime, delay }: { title: string; category: string; readTime: string; delay: number }) => (
-  <div
-    className="min-w-[280px] md:min-w-[320px] p-6 rounded-2xl border border-border-light bg-white/80 backdrop-blur-sm shadow-warm-sm hover:shadow-warm hover:border-primary/30 transition-all duration-300 cursor-default group flex-shrink-0"
-    style={{ animationDelay: `${delay}ms` }}
-  >
-    <div className="flex items-center gap-2 mb-3">
-      <span className="px-2.5 py-1 rounded-full bg-cambridge/10 text-cambridge text-[10px] font-semibold tracking-wider uppercase">
-        {category}
-      </span>
-      <span className="flex items-center gap-1 text-[10px] text-text-muted font-medium">
-        <Clock size={10} />
-        {readTime}
-      </span>
-    </div>
-    <h4 className="font-serif text-sm font-semibold text-text-main leading-snug group-hover:text-primary transition-colors line-clamp-2">
-      {title}
-    </h4>
-    <div className="mt-3 flex items-center gap-1.5 text-primary text-[11px] font-semibold opacity-0 group-hover:opacity-100 transition-opacity">
-      <Sparkles size={12} />
-      AI 解读已就绪
-    </div>
-  </div>
-);
-
 /** 特性卡片 */
 const FeatureCard = ({ icon: Icon, title, description, delay }: { icon: any; title: string; description: string; delay: number }) => (
   <div
@@ -184,15 +158,8 @@ const Landing: React.FC = () => {
           <p className="text-sm text-text-secondary ml-11">{t('landingBrewDesc')}</p>
         </div>
         <div className="flex gap-5 pl-6 md:pl-[calc(50%-570px)] overflow-x-auto pb-4 scrollbar-hide custom-scrollbar">
-          {brewCards.map((card, i) => (
-            <BrewCard
-              key={i}
-              title={card.title}
-              category={card.category}
-              readTime={card.readTime}
-              delay={i * 100}
-            />
-          ))}
+
+          
         </div>
       </section>
 

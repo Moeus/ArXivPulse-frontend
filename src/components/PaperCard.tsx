@@ -1,52 +1,75 @@
 /**
  * PaperCard — 论文卡片组件
  * 設計：精致的"咖啡品鉴卡"风格 — 轻微弥散阴影 + 细线描边
+ *
+ * 接收 paperId，从 paperStore.paperMap 中取完整数据渲染。
  */
 
-import React, { useState } from 'react';
-import { Paper, ViewMode } from '../types';
+import React, { useEffect, useState } from 'react';
+import { ViewMode } from '../types';
 import { useAppStore } from '../store/appStore';
 import { usePaperStore } from '../store/paperStore';
 import { useTranslation } from 'react-i18next';
-import { Bookmark, BookmarkCheck, Sparkles, Clock } from 'lucide-react';
-
+import { Bookmark, BookmarkCheck } from 'lucide-react';
+import  * as  api  from "../service/api"
+import toast from 'react-hot-toast';
 interface PaperCardProps {
-  paper: Paper;
+  paperId: string;
 }
 
-const PaperCard: React.FC<PaperCardProps> = ({ paper }) => {
+const PaperCard: React.FC<PaperCardProps> = ({ paperId }) => {
   const setView = useAppStore(state => state.setView);
-  const { toggleBookmark, setSelectedPaper } = usePaperStore();
+  const { setBookmark, setSelectedPaper, paperMap } = usePaperStore();
   const { t, i18n } = useTranslation();
-  const [showSummary, setShowSummary] = useState(false);
-  const [aiSummary, setAiSummary] = useState<string | null>(null);
+  const [isBookmark, setIsBookmark] = useState(false);
   const [loading, setLoading] = useState(false);
+  const paper = paperMap[paperId];
+  useEffect(()=>{
+    setIsBookmark(paper.isBookmarked)
+  },[paper])
+
+  if (!paper) return null;
 
   // 根据当前语言选择摘要
   const abstract = paper.abstractText
     ? (i18n.language.startsWith('zh') ? paper.abstractText.ch : paper.abstractText.en)
     : '';
 
-  const handleAiInsights = async (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (aiSummary) {
-      setShowSummary(!showSummary);
-      return;
-    }
-    setLoading(true);
-    setShowSummary(true);
-    // const summary = await geminiService.summarizePaper(paper);
-    // setAiSummary(summary);
-    setLoading(false);
-  };
-
   const handleCardClick = () => {
     setSelectedPaper(paper);
     setView(ViewMode.PaperDetail);
   };
+    
+  /**
+   * 处理收藏/取消收藏逻辑
+   * @param {string|number} paperId - 论文唯一标识
+   */
+  const handleToggleBookmark = async (paperId) => {
+    const isAdding = !isBookmark; 
+    if (loading) return; 
+    setLoading(true);
+    try {
+      const res = isAdding 
+        ? await api.addFavorite(paperId) 
+        : await api.removeFavorite(paperId);
+
+      if (res && res.code === 200) {
+        toast.success(res.message || (isAdding ? '收藏成功' : '已取消收藏'));
+        setIsBookmark(isAdding);
+        // 同步到全局状态
+        setBookmark(paperId, isAdding);
+      } else {
+        toast.error(res.message || '操作失败');
+      }
+    } catch (error) {
+      console.error('收藏接口调用异常:', error);
+      toast.error('网络请求失败，请检查网络连接');
+    }
+    setLoading(false);
+  };
 
   return (
-    <div 
+    <div
       onClick={handleCardClick}
       className="bg-white/80 backdrop-blur-sm border border-border-light rounded-2xl p-6 shadow-warm-sm hover:shadow-warm hover:border-primary/20 transition-all duration-300 group cursor-pointer animate-slide-up"
     >
@@ -59,58 +82,28 @@ const PaperCard: React.FC<PaperCardProps> = ({ paper }) => {
             {paper.journal}
           </span>
         </div>
-        <button 
+        <button
           onClick={(e) => {
             e.stopPropagation();
-            toggleBookmark(paper.id);
+            handleToggleBookmark(paperId)
           }}
-          className={`transition-all duration-200 p-1.5 rounded-lg hover:bg-primary/5 ${paper.isBookmarked ? 'text-primary' : 'text-text-muted hover:text-primary'}`}
+          className={`transition-all duration-200 p-1.5 rounded-lg hover:bg-primary/5 ${isBookmark ? 'text-primary' : 'text-text-muted hover:text-primary'}`}
         >
-          {paper.isBookmarked ? <BookmarkCheck className="fill-current" size={20} /> : <Bookmark size={20} />}
+          {isBookmark ? <BookmarkCheck className="fill-current" size={20} /> : <Bookmark size={20} />}
         </button>
       </div>
 
       <h3 className="text-lg font-serif font-semibold text-text-main mb-3 leading-snug group-hover:text-primary transition-colors duration-200">
         {paper.title}
       </h3>
-      
+
       <p className="text-text-secondary text-sm leading-relaxed mb-4 line-clamp-3">
         {abstract}
       </p>
 
-      {showSummary && (
-        <div className="mb-4 p-4 bg-primary/5 rounded-xl border border-primary/10 animate-fade-in">
-          <div className="flex items-center gap-2 mb-2">
-            <Sparkles className="text-primary" size={14} />
-            <span className="text-[10px] font-serif font-semibold text-primary uppercase tracking-wider">{t('geminiAiInsights')}</span>
-          </div>
-          {loading ? (
-            <div className="flex items-center gap-3 text-primary text-sm font-medium py-3">
-              <div className="flex gap-1">
-                <div className="w-1 h-1 rounded-full bg-primary animate-drip" />
-                <div className="w-1 h-1 rounded-full bg-primary animate-drip" style={{ animationDelay: '0.3s' }} />
-                <div className="w-1 h-1 rounded-full bg-primary animate-drip" style={{ animationDelay: '0.6s' }} />
-              </div>
-              <span className="font-serif italic text-xs">{t('analyzingResearch')}</span>
-            </div>
-          ) : (
-            <p className="text-sm text-text-main leading-relaxed">
-              {aiSummary}
-            </p>
-          )}
-        </div>
-      )}
-
       <div className="flex items-center justify-between border-t border-border-light pt-4 mt-auto">
         <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-sm text-text-main">
           <span className="font-medium text-xs text-text-secondary">{paper.authors.join(', ')}</span>
-          <button 
-            onClick={handleAiInsights}
-            className="text-[11px] font-semibold text-primary flex items-center gap-1 hover:underline underline-offset-2"
-          >
-            <Sparkles size={12} />
-            {showSummary ? t('hide') : t('explain')}
-          </button>
         </div>
         <span className="text-[10px] text-text-muted font-mono bg-background-warm px-2 py-1 rounded-lg hidden sm:inline-block">
           {paper.publishedDate}

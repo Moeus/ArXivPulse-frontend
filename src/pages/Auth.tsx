@@ -9,7 +9,7 @@ import { useAppStore } from '../store/appStore';
 import { useUserStore } from '../store/userStore';
 import { ViewMode } from '../types';
 import * as api from '../service/api';
-import toast, { Toaster } from 'react-hot-toast';
+import toast from 'react-hot-toast';
 import {
   Coffee,
   Languages,
@@ -263,7 +263,6 @@ const Auth: React.FC = () => {
 
   return (
     <div className="min-h-screen flex bg-background-light">
-      <Toaster />
 
       {/* Left decorative panel — Desktop only */}
       <div className="hidden lg:flex w-[420px] flex-shrink-0 bg-background-dark relative overflow-hidden flex-col justify-between p-10">

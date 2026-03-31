@@ -15,7 +15,6 @@ const MobileNav: React.FC = () => {
 
   /** 导航项配置 */
   const navItems = [
-    { id: ViewMode.Home, icon: LayoutGrid, label: t('navHome') },
     { id: ViewMode.Explore, icon: Compass, label: t('navExplore') },
     { id: ViewMode.Library, icon: Bookmark, label: t('navSaved') },
     { id: ViewMode.Account, icon: User, label: t('navProfile') },
